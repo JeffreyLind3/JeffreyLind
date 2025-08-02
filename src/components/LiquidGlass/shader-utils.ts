@@ -35,10 +35,6 @@ function roundedRectSDF(
   );
 }
 
-function texture(x: number, y: number): Vec2 {
-  return { x, y };
-}
-
 // Shader fragment functions for different effects
 export const fragmentShaders = {
   liquidGlass: (uv: Vec2): Vec2 => {
@@ -47,7 +43,7 @@ export const fragmentShaders = {
     const distanceToEdge = roundedRectSDF(ix, iy, 0.3, 0.2, 0.6);
     const displacement = smoothStep(0.8, 0, distanceToEdge - 0.15);
     const scaled = smoothStep(0, 1, displacement);
-    return texture(ix * scaled + 0.5, iy * scaled + 0.5);
+    return { x: ix * scaled + 0.5, y: iy * scaled + 0.5 };
   },
 };
 
