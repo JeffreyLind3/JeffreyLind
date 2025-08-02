@@ -4,7 +4,6 @@ import {
 } from "@/components/LiquidGlass/shader-utils";
 import {
   displacementMap,
-  polarDisplacementMap,
   prominentDisplacementMap,
 } from "@/components/LiquidGlass/utils";
 import {
@@ -35,14 +34,12 @@ const generateShaderDisplacementMap = (
 };
 
 const getMap = (
-  mode: "standard" | "polar" | "prominent" | "shader",
+  mode: "standard" | "prominent" | "shader",
   shaderMapUrl?: string
 ) => {
   switch (mode) {
     case "standard":
       return displacementMap;
-    case "polar":
-      return polarDisplacementMap;
     case "prominent":
       return prominentDisplacementMap;
     case "shader":
@@ -59,7 +56,7 @@ const GlassFilter: React.FC<{
   aberrationIntensity: number;
   width: number;
   height: number;
-  mode: "standard" | "polar" | "prominent" | "shader";
+  mode: "standard" | "prominent" | "shader";
   shaderMapUrl?: string;
 }> = ({
   id,
@@ -251,7 +248,7 @@ const GlassContainer = forwardRef<
     padding?: string;
     glassSize?: { width: number; height: number };
     onClick?: () => void;
-    mode?: "standard" | "polar" | "prominent" | "shader";
+    mode?: "standard" | "prominent" | "shader";
   }>
 >(
   (
@@ -388,7 +385,7 @@ interface LiquidGlassProps {
   padding?: string;
   style?: React.CSSProperties;
   overLight?: boolean;
-  mode?: "standard" | "polar" | "prominent" | "shader";
+  mode?: "standard" | "prominent" | "shader";
   onClick?: () => void;
 }
 
