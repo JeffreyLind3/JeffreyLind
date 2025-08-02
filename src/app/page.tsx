@@ -23,7 +23,7 @@ export default function Home() {
           mouseContainer={containerRef}
           style={{
             position: "fixed",
-            top: "50%",
+            top: "6%",
             left: "50%",
             transform: "translate(-50%, -50%)",
           }}
