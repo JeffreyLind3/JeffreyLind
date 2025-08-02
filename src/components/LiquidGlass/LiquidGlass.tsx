@@ -231,7 +231,6 @@ const GlassContainer = forwardRef<
     blurAmount?: number;
     saturation?: number;
     aberrationIntensity?: number;
-    mouseOffset?: { x: number; y: number };
     onMouseLeave?: () => void;
     onMouseEnter?: () => void;
     onMouseDown?: () => void;
@@ -370,9 +369,7 @@ interface LiquidGlassProps {
   blurAmount?: number;
   saturation?: number;
   aberrationIntensity?: number;
-  elasticity?: number;
   cornerRadius?: number;
-  globalMousePos?: { x: number; y: number };
   mouseOffset?: { x: number; y: number };
   mouseContainer?: React.RefObject<HTMLElement | null> | null;
   className?: string;
@@ -389,9 +386,7 @@ export default function LiquidGlass({
   blurAmount = 0.0625,
   saturation = 140,
   aberrationIntensity = 2,
-  elasticity = 0.15,
   cornerRadius = 999,
-  globalMousePos: externalGlobalMousePos,
   mouseOffset: externalMouseOffset,
   mouseContainer = null,
   className = "",
@@ -405,17 +400,12 @@ export default function LiquidGlass({
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [glassSize, setGlassSize] = useState({ width: 270, height: 69 });
-  const [internalGlobalMousePos, setInternalGlobalMousePos] = useState({
-    x: 0,
-    y: 0,
-  });
   const [internalMouseOffset, setInternalMouseOffset] = useState({
     x: 0,
     y: 0,
   });
 
   // Use external mouse position if provided, otherwise use internal
-  const globalMousePos = externalGlobalMousePos || internalGlobalMousePos;
   const mouseOffset = externalMouseOffset || internalMouseOffset;
 
   // Internal mouse tracking
@@ -434,18 +424,13 @@ export default function LiquidGlass({
         x: ((e.clientX - centerX) / rect.width) * 100,
         y: ((e.clientY - centerY) / rect.height) * 100,
       });
-
-      setInternalGlobalMousePos({
-        x: e.clientX,
-        y: e.clientY,
-      });
     },
     [mouseContainer]
   );
 
   // Set up mouse tracking if no external mouse position is provided
   useEffect(() => {
-    if (externalGlobalMousePos && externalMouseOffset) {
+    if (externalMouseOffset) {
       // External mouse tracking is provided, don't set up internal tracking
       return;
     }
@@ -460,59 +445,13 @@ export default function LiquidGlass({
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [
-    handleMouseMove,
-    mouseContainer,
-    externalGlobalMousePos,
-    externalMouseOffset,
-  ]);
+  }, [handleMouseMove, mouseContainer, externalMouseOffset]);
 
   // Calculate directional scaling based on mouse position
   const calculateTransform = useCallback(() => {
-    if (!globalMousePos.x || !globalMousePos.y || !glassRef.current) {
-      return "translate(-50%, -50%) scale(1)";
-    }
-
-    const rect = glassRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const deltaX = globalMousePos.x - centerX;
-    const deltaY = globalMousePos.y - centerY;
-
-    // Fade-in calculation
-    const edgeX = Math.max(0, Math.abs(deltaX) - glassSize.width / 2);
-    const edgeY = Math.max(0, Math.abs(deltaY) - glassSize.height / 2);
-    const edgeDist = Math.sqrt(edgeX ** 2 + edgeY ** 2);
-    const fadeIn = edgeDist > 200 ? 0 : 1 - edgeDist / 200;
-
-    // Translation
-    const transX = deltaX * elasticity * 0.1 * fadeIn;
-    const transY = deltaY * elasticity * 0.1 * fadeIn;
-
-    const centerDist = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-    if (centerDist === 0 || edgeDist > 200) {
-      return `translate(calc(-50% + ${transX}px), calc(-50% + ${transY}px)) scale(1)`;
-    }
-
-    // Scaling
-    const normX = deltaX / centerDist;
-    const normY = deltaY / centerDist;
-    const intensity = Math.min(centerDist / 300, 1) * elasticity * fadeIn;
-    const scaleX = Math.max(
-      0.8,
-      1 + Math.abs(normX) * intensity * 0.3 - Math.abs(normY) * intensity * 0.15
-    );
-    const scaleY = Math.max(
-      0.8,
-      1 + Math.abs(normY) * intensity * 0.3 - Math.abs(normX) * intensity * 0.15
-    );
-
-    const scale =
-      isActive && onClick
-        ? "scale(0.96)"
-        : `scaleX(${scaleX}) scaleY(${scaleY})`;
-    return `translate(calc(-50% + ${transX}px), calc(-50% + ${transY}px)) ${scale}`;
-  }, [globalMousePos, elasticity, glassSize, isActive, onClick]);
+    const scale = isActive && onClick ? "scale(0.96)" : "scale(1)";
+    return `translate(-50%, -50%) ${scale}`;
+  }, [isActive, onClick]);
 
   // Update glass size whenever component mounts or window resizes
   useEffect(() => {
@@ -585,7 +524,6 @@ export default function LiquidGlass({
         aberrationIntensity={aberrationIntensity}
         glassSize={glassSize}
         padding={padding}
-        mouseOffset={mouseOffset}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onMouseDown={() => setIsActive(true)}
