@@ -26,7 +26,7 @@ export default function Navbar() {
         transform: "translate(-50%, -50%)",
       }}
     >
-      <div className="p-6 w-[400px]"></div>
+      <div className="p-6 w-[400px]" />
     </LiquidGlass>
   );
 }
