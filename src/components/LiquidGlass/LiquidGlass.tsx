@@ -1,8 +1,8 @@
+import { displacementMap } from "@/components/LiquidGlass/displacementMap";
 import {
   ShaderDisplacementGenerator,
   fragmentShaders,
 } from "@/components/LiquidGlass/shader-utils";
-import { displacementMap } from "@/components/LiquidGlass/utils";
 import {
   type CSSProperties,
   forwardRef,
