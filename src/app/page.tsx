@@ -19,7 +19,7 @@ export default function Home() {
           saturation={100}
           aberrationIntensity={3}
           elasticity={0.3}
-          cornerRadius={32}
+          cornerRadius={100}
           mouseContainer={containerRef}
           style={{
             position: "fixed",
@@ -28,7 +28,7 @@ export default function Home() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <div className="p-6 w-[400px] h-[200px]" />
+          <div className="p-6 w-[400px]" />
         </LiquidGlass>
       </main>
     </div>
