@@ -2,10 +2,7 @@ import {
   ShaderDisplacementGenerator,
   fragmentShaders,
 } from "@/components/LiquidGlass/shader-utils";
-import {
-  displacementMap,
-  prominentDisplacementMap,
-} from "@/components/LiquidGlass/utils";
+import { displacementMap } from "@/components/LiquidGlass/utils";
 import {
   type CSSProperties,
   forwardRef,
@@ -33,15 +30,10 @@ const generateShaderDisplacementMap = (
   return dataUrl;
 };
 
-const getMap = (
-  mode: "standard" | "prominent" | "shader",
-  shaderMapUrl?: string
-) => {
+const getMap = (mode: "standard" | "shader", shaderMapUrl?: string) => {
   switch (mode) {
     case "standard":
       return displacementMap;
-    case "prominent":
-      return prominentDisplacementMap;
     case "shader":
       return shaderMapUrl || displacementMap;
     default:
@@ -56,7 +48,7 @@ const GlassFilter: React.FC<{
   aberrationIntensity: number;
   width: number;
   height: number;
-  mode: "standard" | "prominent" | "shader";
+  mode: "standard" | "shader";
   shaderMapUrl?: string;
 }> = ({
   id,
@@ -248,7 +240,7 @@ const GlassContainer = forwardRef<
     padding?: string;
     glassSize?: { width: number; height: number };
     onClick?: () => void;
-    mode?: "standard" | "prominent" | "shader";
+    mode?: "standard" | "shader";
   }>
 >(
   (
@@ -385,7 +377,7 @@ interface LiquidGlassProps {
   padding?: string;
   style?: React.CSSProperties;
   overLight?: boolean;
-  mode?: "standard" | "prominent" | "shader";
+  mode?: "standard" | "shader";
   onClick?: () => void;
 }
 
