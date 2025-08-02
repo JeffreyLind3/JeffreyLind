@@ -1,5 +1,6 @@
 "use client";
 
+import Background from "@/components/Background";
 import LiquidGlass from "liquid-glass-react";
 import { useRef } from "react";
 
@@ -8,8 +9,9 @@ export default function Home() {
   return (
     <div
       ref={containerRef}
-      className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vw_*_25_/_16_+_200vh)] p-8 pb-20 gap-16 sm:p-20 bg-[url('/Hero.png'),_url('/Hero.png'),_url('/Hero.png'),_url('/Hero.png'),_url('/Hero.png')] bg-[size:100%_auto,100%_auto,100%_auto,100%_auto,100%_auto] bg-[position:0_0,0_calc(100vw_*_5_/_16),0_calc(100vw_*_10_/_16),0_calc(100vw_*_15_/_16),0_calc(100vw_*_20_/_16)] bg-[repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat]"
+      className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vw_*_25_/_16_*_3_+_200vh)] p-8 pb-20 gap-16 sm:p-20"
     >
+      <Background />
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <LiquidGlass
           displacementScale={100}
