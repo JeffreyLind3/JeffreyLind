@@ -1,5 +1,3 @@
-// Adapted from https://github.com/shuding/liquid-glass
-
 interface Vec2 {
   x: number;
   y: number;
