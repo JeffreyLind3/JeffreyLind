@@ -15,7 +15,6 @@ export default function Navbar() {
       displacementScale={100}
       blurAmount={0}
       saturation={100}
-      aberrationIntensity={3}
       cornerRadius={100}
       mouseContainer={containerRef}
       style={{

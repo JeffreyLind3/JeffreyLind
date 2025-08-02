@@ -47,31 +47,13 @@ const getMap = (mode: "standard" | "shader", shaderMapUrl?: string) => {
 const GlassFilter: React.FC<{
   id: string;
   displacementScale: number;
-  aberrationIntensity: number;
   width: number;
   height: number;
   mode: "standard" | "shader";
   shaderMapUrl?: string;
-}> = ({
-  id,
-  displacementScale,
-  aberrationIntensity,
-  width,
-  height,
-  mode,
-  shaderMapUrl,
-}) => (
+}> = ({ id, displacementScale, width, height, mode, shaderMapUrl }) => (
   <svg style={{ position: "absolute", width, height }} aria-hidden="true">
     <defs>
-      <radialGradient id={`${id}-edge-mask`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="black" stopOpacity="0" />
-        <stop
-          offset={`${Math.max(30, 80 - aberrationIntensity * 2)}%`}
-          stopColor="black"
-          stopOpacity="0"
-        />
-        <stop offset="100%" stopColor="white" stopOpacity="1" />
-      </radialGradient>
       <filter
         id={id}
         x="-35%"
@@ -102,16 +84,13 @@ const GlassFilter: React.FC<{
           result="EDGE_INTENSITY"
         />
         <feComponentTransfer in="EDGE_INTENSITY" result="EDGE_MASK">
-          <feFuncA
-            type="discrete"
-            tableValues={`0 ${aberrationIntensity * 0.05} 1`}
-          />
+          <feFuncA type="discrete" tableValues={`0 0 1`} />
         </feComponentTransfer>
 
         {/* Original undisplaced image for center */}
         <feOffset in="SourceGraphic" dx="0" dy="0" result="CENTER_ORIGINAL" />
 
-        {/* Red channel displacement with slight offset */}
+        {/* Red channel displacement */}
         <feDisplacementMap
           in="SourceGraphic"
           in2="DISPLACEMENT_MAP"
@@ -134,10 +113,7 @@ const GlassFilter: React.FC<{
         <feDisplacementMap
           in="SourceGraphic"
           in2="DISPLACEMENT_MAP"
-          scale={
-            displacementScale *
-            ((mode === "shader" ? 1 : -1) - aberrationIntensity * 0.05)
-          }
+          scale={displacementScale * (mode === "shader" ? 1 : -1)}
           xChannelSelector="R"
           yChannelSelector="B"
           result="GREEN_DISPLACED"
@@ -152,14 +128,11 @@ const GlassFilter: React.FC<{
           result="GREEN_CHANNEL"
         />
 
-        {/* Blue channel displacement with slight offset */}
+        {/* Blue channel displacement */}
         <feDisplacementMap
           in="SourceGraphic"
           in2="DISPLACEMENT_MAP"
-          scale={
-            displacementScale *
-            ((mode === "shader" ? 1 : -1) - aberrationIntensity * 0.1)
-          }
+          scale={displacementScale * (mode === "shader" ? 1 : -1)}
           xChannelSelector="R"
           yChannelSelector="B"
           result="BLUE_DISPLACED"
@@ -174,7 +147,7 @@ const GlassFilter: React.FC<{
           result="BLUE_CHANNEL"
         />
 
-        {/* Combine all channels with screen blend mode for chromatic aberration */}
+        {/* Combine all channels with screen blend mode */}
         <feBlend
           in="GREEN_CHANNEL"
           in2="BLUE_CHANNEL"
@@ -188,19 +161,12 @@ const GlassFilter: React.FC<{
           result="RGB_COMBINED"
         />
 
-        {/* Add slight blur to soften the aberration effect */}
-        <feGaussianBlur
-          in="RGB_COMBINED"
-          stdDeviation={Math.max(0.1, 0.5 - aberrationIntensity * 0.1)}
-          result="ABERRATED_BLURRED"
-        />
-
-        {/* Apply edge mask to aberration effect */}
+        {/* Apply edge mask to effect */}
         <feComposite
-          in="ABERRATED_BLURRED"
+          in="RGB_COMBINED"
           in2="EDGE_MASK"
           operator="in"
-          result="EDGE_ABERRATION"
+          result="EDGE_EFFECT"
         />
 
         {/* Create inverted mask for center */}
@@ -214,8 +180,8 @@ const GlassFilter: React.FC<{
           result="CENTER_CLEAN"
         />
 
-        {/* Combine edge aberration with clean center */}
-        <feComposite in="EDGE_ABERRATION" in2="CENTER_CLEAN" operator="over" />
+        {/* Combine edge effect with clean center */}
+        <feComposite in="EDGE_EFFECT" in2="CENTER_CLEAN" operator="over" />
       </filter>
     </defs>
   </svg>
@@ -230,7 +196,6 @@ const GlassContainer = forwardRef<
     displacementScale?: number;
     blurAmount?: number;
     saturation?: number;
-    aberrationIntensity?: number;
     onMouseLeave?: () => void;
     onMouseEnter?: () => void;
     onMouseDown?: () => void;
@@ -252,7 +217,6 @@ const GlassContainer = forwardRef<
       displacementScale = 25,
       blurAmount = 12,
       saturation = 180,
-      aberrationIntensity = 2,
       onMouseEnter,
       onMouseLeave,
       onMouseDown,
@@ -303,7 +267,6 @@ const GlassContainer = forwardRef<
           mode={mode}
           id={filterId}
           displacementScale={displacementScale}
-          aberrationIntensity={aberrationIntensity}
           width={glassSize.width}
           height={glassSize.height}
           shaderMapUrl={shaderMapUrl}
@@ -368,7 +331,6 @@ interface LiquidGlassProps {
   displacementScale?: number;
   blurAmount?: number;
   saturation?: number;
-  aberrationIntensity?: number;
   cornerRadius?: number;
   mouseOffset?: { x: number; y: number };
   mouseContainer?: React.RefObject<HTMLElement | null> | null;
@@ -385,7 +347,6 @@ export default function LiquidGlass({
   displacementScale = 70,
   blurAmount = 0.0625,
   saturation = 140,
-  aberrationIntensity = 2,
   cornerRadius = 999,
   mouseOffset: externalMouseOffset,
   mouseContainer = null,
@@ -521,7 +482,6 @@ export default function LiquidGlass({
         }
         blurAmount={blurAmount}
         saturation={saturation}
-        aberrationIntensity={aberrationIntensity}
         glassSize={glassSize}
         padding={padding}
         onMouseEnter={() => setIsHovered(true)}
