@@ -466,112 +466,51 @@ export default function LiquidGlass({
   ]);
 
   // Calculate directional scaling based on mouse position
-  const calculateDirectionalScale = useCallback(() => {
+  const calculateTransform = useCallback(() => {
     if (!globalMousePos.x || !globalMousePos.y || !glassRef.current) {
-      return "scale(1)";
+      return "translate(-50%, -50%) scale(1)";
     }
 
     const rect = glassRef.current.getBoundingClientRect();
-    const pillCenterX = rect.left + rect.width / 2;
-    const pillCenterY = rect.top + rect.height / 2;
-    const pillWidth = glassSize.width;
-    const pillHeight = glassSize.height;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = globalMousePos.x - centerX;
+    const deltaY = globalMousePos.y - centerY;
 
-    const deltaX = globalMousePos.x - pillCenterX;
-    const deltaY = globalMousePos.y - pillCenterY;
+    // Fade-in calculation
+    const edgeX = Math.max(0, Math.abs(deltaX) - glassSize.width / 2);
+    const edgeY = Math.max(0, Math.abs(deltaY) - glassSize.height / 2);
+    const edgeDist = Math.sqrt(edgeX ** 2 + edgeY ** 2);
+    const fadeIn = edgeDist > 200 ? 0 : 1 - edgeDist / 200;
 
-    // Calculate distance from mouse to pill edges (not center)
-    const edgeDistanceX = Math.max(0, Math.abs(deltaX) - pillWidth / 2);
-    const edgeDistanceY = Math.max(0, Math.abs(deltaY) - pillHeight / 2);
-    const edgeDistance = Math.sqrt(
-      edgeDistanceX * edgeDistanceX + edgeDistanceY * edgeDistanceY
-    );
+    // Translation
+    const transX = deltaX * elasticity * 0.1 * fadeIn;
+    const transY = deltaY * elasticity * 0.1 * fadeIn;
 
-    // Activation zone: 200px from edges
-    const activationZone = 200;
-
-    // If outside activation zone, no effect
-    if (edgeDistance > activationZone) {
-      return "scale(1)";
+    const centerDist = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    if (centerDist === 0 || edgeDist > 200) {
+      return `translate(calc(-50% + ${transX}px), calc(-50% + ${transY}px)) scale(1)`;
     }
 
-    // Calculate fade-in factor (1 at edge, 0 at activation zone boundary)
-    const fadeInFactor = 1 - edgeDistance / activationZone;
-
-    // Normalize the deltas for direction
-    const centerDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    if (centerDistance === 0) {
-      return "scale(1)";
-    }
-
-    const normalizedX = deltaX / centerDistance;
-    const normalizedY = deltaY / centerDistance;
-
-    // Calculate stretch factors with fade-in
-    const stretchIntensity =
-      Math.min(centerDistance / 300, 1) * elasticity * fadeInFactor;
-
-    // X-axis scaling: stretch horizontally when moving left/right, compress when moving up/down
-    const scaleX =
-      1 +
-      Math.abs(normalizedX) * stretchIntensity * 0.3 -
-      Math.abs(normalizedY) * stretchIntensity * 0.15;
-
-    // Y-axis scaling: stretch vertically when moving up/down, compress when moving left/right
-    const scaleY =
-      1 +
-      Math.abs(normalizedY) * stretchIntensity * 0.3 -
-      Math.abs(normalizedX) * stretchIntensity * 0.15;
-
-    return `scaleX(${Math.max(0.8, scaleX)}) scaleY(${Math.max(0.8, scaleY)})`;
-  }, [globalMousePos, elasticity, glassSize]);
-
-  // Helper function to calculate fade-in factor based on distance from element edges
-  const calculateFadeInFactor = useCallback(() => {
-    if (!globalMousePos.x || !globalMousePos.y || !glassRef.current) {
-      return 0;
-    }
-
-    const rect = glassRef.current.getBoundingClientRect();
-    const pillCenterX = rect.left + rect.width / 2;
-    const pillCenterY = rect.top + rect.height / 2;
-    const pillWidth = glassSize.width;
-    const pillHeight = glassSize.height;
-
-    const edgeDistanceX = Math.max(
-      0,
-      Math.abs(globalMousePos.x - pillCenterX) - pillWidth / 2
+    // Scaling
+    const normX = deltaX / centerDist;
+    const normY = deltaY / centerDist;
+    const intensity = Math.min(centerDist / 300, 1) * elasticity * fadeIn;
+    const scaleX = Math.max(
+      0.8,
+      1 + Math.abs(normX) * intensity * 0.3 - Math.abs(normY) * intensity * 0.15
     );
-    const edgeDistanceY = Math.max(
-      0,
-      Math.abs(globalMousePos.y - pillCenterY) - pillHeight / 2
-    );
-    const edgeDistance = Math.sqrt(
-      edgeDistanceX * edgeDistanceX + edgeDistanceY * edgeDistanceY
+    const scaleY = Math.max(
+      0.8,
+      1 + Math.abs(normY) * intensity * 0.3 - Math.abs(normX) * intensity * 0.15
     );
 
-    const activationZone = 200;
-    return edgeDistance > activationZone
-      ? 0
-      : 1 - edgeDistance / activationZone;
-  }, [globalMousePos, glassSize]);
-
-  // Helper function to calculate elastic translation
-  const calculateElasticTranslation = useCallback(() => {
-    if (!glassRef.current) {
-      return { x: 0, y: 0 };
-    }
-
-    const fadeInFactor = calculateFadeInFactor();
-    const rect = glassRef.current.getBoundingClientRect();
-    const pillCenterX = rect.left + rect.width / 2;
-    const pillCenterY = rect.top + rect.height / 2;
-
-    return {
-      x: (globalMousePos.x - pillCenterX) * elasticity * 0.1 * fadeInFactor,
-      y: (globalMousePos.y - pillCenterY) * elasticity * 0.1 * fadeInFactor,
-    };
-  }, [globalMousePos, elasticity, calculateFadeInFactor]);
+    const scale =
+      isActive && onClick
+        ? "scale(0.96)"
+        : `scaleX(${scaleX}) scaleY(${scaleY})`;
+    return `translate(calc(-50% + ${transX}px), calc(-50% + ${transY}px)) ${scale}`;
+  }, [globalMousePos, elasticity, glassSize, isActive, onClick]);
 
   // Update glass size whenever component mounts or window resizes
   useEffect(() => {
@@ -587,11 +526,7 @@ export default function LiquidGlass({
     return () => window.removeEventListener("resize", updateGlassSize);
   }, []);
 
-  const transformStyle = `translate(calc(-50% + ${
-    calculateElasticTranslation().x
-  }px), calc(-50% + ${calculateElasticTranslation().y}px)) ${
-    isActive && Boolean(onClick) ? "scale(0.96)" : calculateDirectionalScale()
-  }`;
+  const transformStyle = calculateTransform();
 
   const baseStyle = {
     ...style,
