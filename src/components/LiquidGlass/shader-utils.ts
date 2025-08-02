@@ -12,11 +12,11 @@ interface ShaderOptions {
 
 function smoothStep(a: number, b: number, t: number): number {
   t = Math.max(0, Math.min(1, (t - a) / (b - a)));
-  return t * t * (3 - 2 * t);
+  return t ** 2 * (3 - 2 * t);
 }
 
 function length(x: number, y: number): number {
-  return Math.sqrt(x * x + y * y);
+  return Math.sqrt(x ** 2 + y ** 2);
 }
 
 function roundedRectSDF(
