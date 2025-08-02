@@ -1,11 +1,11 @@
 // Adapted from https://github.com/shuding/liquid-glass
 
-export interface Vec2 {
+interface Vec2 {
   x: number;
   y: number;
 }
 
-export interface ShaderOptions {
+interface ShaderOptions {
   width: number;
   height: number;
   fragment: (uv: Vec2, mouse?: Vec2) => Vec2;
