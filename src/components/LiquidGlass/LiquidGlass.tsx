@@ -96,9 +96,9 @@ const GlassFilter: React.FC<{
           in="DISPLACEMENT_MAP"
           type="matrix"
           values="0.3 0.3 0.3 0 0
-                 0.3 0.3 0.3 0 0
-                 0.3 0.3 0.3 0 0
-                 0 0 0 1 0"
+                  0.3 0.3 0.3 0 0
+                  0.3 0.3 0.3 0 0
+                  0 0 0 1 0"
           result="EDGE_INTENSITY"
         />
         <feComponentTransfer in="EDGE_INTENSITY" result="EDGE_MASK">
@@ -124,9 +124,9 @@ const GlassFilter: React.FC<{
           in="RED_DISPLACED"
           type="matrix"
           values="1 0 0 0 0
-                 0 0 0 0 0
-                 0 0 0 0 0
-                 0 0 0 1 0"
+                  0 0 0 0 0
+                  0 0 0 0 0
+                  0 0 0 1 0"
           result="RED_CHANNEL"
         />
 
@@ -146,9 +146,9 @@ const GlassFilter: React.FC<{
           in="GREEN_DISPLACED"
           type="matrix"
           values="0 0 0 0 0
-                 0 1 0 0 0
-                 0 0 0 0 0
-                 0 0 0 1 0"
+                  0 1 0 0 0
+                  0 0 0 0 0
+                  0 0 0 1 0"
           result="GREEN_CHANNEL"
         />
 
@@ -168,9 +168,9 @@ const GlassFilter: React.FC<{
           in="BLUE_DISPLACED"
           type="matrix"
           values="0 0 0 0 0
-                 0 0 0 0 0
-                 0 0 1 0 0
-                 0 0 0 1 0"
+                  0 0 0 0 0
+                  0 0 1 0 0
+                  0 0 0 1 0"
           result="BLUE_CHANNEL"
         />
 
