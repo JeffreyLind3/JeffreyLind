@@ -1,7 +1,7 @@
 "use client";
 
 import Background from "@/components/Background";
-import LiquidGlass from "liquid-glass-react";
+import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import { useRef } from "react";
 
 export default function Home() {
