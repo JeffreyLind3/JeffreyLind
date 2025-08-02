@@ -53,8 +53,6 @@ export const fragmentShaders = {
   },
 };
 
-export type FragmentShaderType = keyof typeof fragmentShaders;
-
 export class ShaderDisplacementGenerator {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
