@@ -28,18 +28,7 @@ export default function Navbar() {
 
   return (
     <>
-      <span
-        style={{
-          position: "fixed",
-          top: "4.7%",
-          left: "calc(50% - 335px)",
-          transform: "translate(-50%, -50%)",
-          fontSize: "1.5rem",
-          fontWeight: "bold",
-          fontFamily: "var(--font-geist-sans)",
-          color: "white",
-        }}
-      >
+      <span className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white sm:left-[calc(50%-335px)] sm:-translate-x-1/2">
         Jeffrey Lind
       </span>
       <div className="hidden sm:block">
