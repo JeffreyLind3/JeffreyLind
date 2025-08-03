@@ -39,9 +39,9 @@ export default function Navbar() {
         }}
       >
         <div className="flex justify-between w-[300px] text-base font-bold">
-          <Link href="#">Home</Link>
-          <Link href="#">Career</Link>
-          <Link href="#">Projects</Link>
+          <Link href="/">Home</Link>
+          <Link href="/career">Career</Link>
+          <Link href="/projects">Projects</Link>
         </div>
       </LiquidGlass>
     </>
