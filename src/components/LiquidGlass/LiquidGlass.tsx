@@ -388,7 +388,7 @@ export default function LiquidGlass({
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [handleMouseMove, mouseContainer, externalMouseOffset]);
+  }, [handleMouseMove, mouseContainer, externalMouseOffset, isSafari]);
 
   // Calculate directional scaling based on mouse position
   const calculateTransform = useCallback(() => {
