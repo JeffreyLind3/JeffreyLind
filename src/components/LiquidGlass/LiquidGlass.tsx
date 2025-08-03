@@ -350,7 +350,7 @@ export default function LiquidGlass({
 
   // Use external mouse position if provided, otherwise use internal
   const mouseOffset = externalMouseOffset || internalMouseOffset;
-
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   // Internal mouse tracking
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -373,8 +373,8 @@ export default function LiquidGlass({
 
   // Set up mouse tracking if no external mouse position is provided
   useEffect(() => {
-    if (externalMouseOffset) {
-      // External mouse tracking is provided, don't set up internal tracking
+    if (externalMouseOffset || isSafari) {
+      // External mouse tracking is provided or is Safari, don't set up internal tracking
       return;
     }
 
