@@ -500,15 +500,15 @@ export default function LiquidGlass({
           boxShadow:
             "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
           background: `linear-gradient(
-          ${135 + mouseOffset.x * 1.2}deg,
-          rgba(255, 255, 255, 0.0) 0%,
-          rgba(255, 255, 255, ${
-            0.12 + Math.abs(mouseOffset.x) * 0.008
-          }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-          rgba(255, 255, 255, ${
-            0.4 + Math.abs(mouseOffset.x) * 0.012
-          }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-          rgba(255, 255, 255, 0.0) 100%
+                       ${135 + mouseOffset.x * 1.2}deg,
+                       rgba(255, 255, 255, 0.0) 0%,
+                       rgba(255, 255, 255, ${
+                         0.12 + Math.abs(mouseOffset.x) * 0.008
+                       }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
+                       rgba(255, 255, 255, ${
+                         0.4 + Math.abs(mouseOffset.x) * 0.012
+                       }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
+                       rgba(255, 255, 255, 0.0) 100%
         )`,
         }}
       />
@@ -532,15 +532,15 @@ export default function LiquidGlass({
           boxShadow:
             "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
           background: `linear-gradient(
-          ${135 + mouseOffset.x * 1.2}deg,
-          rgba(255, 255, 255, 0.0) 0%,
-          rgba(255, 255, 255, ${
-            0.32 + Math.abs(mouseOffset.x) * 0.008
-          }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-          rgba(255, 255, 255, ${
-            0.6 + Math.abs(mouseOffset.x) * 0.012
-          }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-          rgba(255, 255, 255, 0.0) 100%
+                       ${135 + mouseOffset.x * 1.2}deg,
+                       rgba(255, 255, 255, 0.0) 0%,
+                       rgba(255, 255, 255, ${
+                         0.32 + Math.abs(mouseOffset.x) * 0.008
+                       }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
+                       rgba(255, 255, 255, ${
+                         0.6 + Math.abs(mouseOffset.x) * 0.012
+                       }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
+                       rgba(255, 255, 255, 0.0) 100%
         )`,
         }}
       />
