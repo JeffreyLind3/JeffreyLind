@@ -28,7 +28,7 @@ export default function Navbar() {
         Jeffrey Lind
       </span>
       <LiquidGlass
-        displacementScale={100}
+        displacementScale={150}
         mouseContainer={containerRef}
         padding="16px 30px"
         style={{
