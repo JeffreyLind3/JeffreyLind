@@ -509,7 +509,7 @@ export default function LiquidGlass({
                          0.4 + Math.abs(mouseOffset.x) * 0.012
                        }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
                        rgba(255, 255, 255, 0.0) 100%
-        )`,
+                      )`,
         }}
       />
 
@@ -541,7 +541,7 @@ export default function LiquidGlass({
                          0.6 + Math.abs(mouseOffset.x) * 0.012
                        }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
                        rgba(255, 255, 255, 0.0) 100%
-        )`,
+                      )`,
         }}
       />
 
