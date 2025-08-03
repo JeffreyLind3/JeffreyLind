@@ -32,7 +32,7 @@ export default function Navbar() {
         style={{
           position: "fixed",
           top: "4.7%",
-          left: "calc(50% - 285px)",
+          left: "calc(50% - 335px)",
           transform: "translate(-50%, -50%)",
           fontSize: "1.5rem",
           fontWeight: "bold",
@@ -53,9 +53,10 @@ export default function Navbar() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <div className="flex justify-between w-[332px] text-base font-bold">
+        <div className="flex justify-between w-[432px] text-base font-bold">
           <NavLink href="/">Home</NavLink>
           <NavLink href="/career">Career</NavLink>
+          <NavLink href="/education">Education</NavLink>
           <NavLink href="/projects">Projects</NavLink>
         </div>
       </LiquidGlass>
