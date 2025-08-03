@@ -19,6 +19,9 @@ const generateShaderDisplacementMap = (
   width: number,
   height: number
 ): string => {
+  if (width <= 0 || height <= 0) {
+    return "";
+  }
   const generator = new ShaderDisplacementGenerator({
     width,
     height,

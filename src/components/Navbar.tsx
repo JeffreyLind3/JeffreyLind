@@ -42,24 +42,26 @@ export default function Navbar() {
       >
         Jeffrey Lind
       </span>
-      <LiquidGlass
-        displacementScale={150}
-        mouseContainer={container}
-        padding="8px 14px"
-        style={{
-          position: "fixed",
-          top: "4.7%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <div className="flex justify-between w-[432px] text-base font-bold">
-          <NavLink href="/">Home</NavLink>
-          <NavLink href="/career">Career</NavLink>
-          <NavLink href="/education">Education</NavLink>
-          <NavLink href="/projects">Projects</NavLink>
-        </div>
-      </LiquidGlass>
+      <div className="hidden sm:block">
+        <LiquidGlass
+          displacementScale={150}
+          mouseContainer={container}
+          padding="8px 14px"
+          style={{
+            position: "fixed",
+            top: "4.7%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <div className="flex justify-between w-[432px] text-base font-bold">
+            <NavLink href="/">Home</NavLink>
+            <NavLink href="/career">Career</NavLink>
+            <NavLink href="/education">Education</NavLink>
+            <NavLink href="/projects">Projects</NavLink>
+          </div>
+        </LiquidGlass>
+      </div>
     </>
   );
 }
