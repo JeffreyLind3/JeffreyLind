@@ -28,10 +28,10 @@ export default function Navbar() {
 
   return (
     <>
-      <span className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white sm:left-[calc(50%-335px)] sm:-translate-x-1/2">
+      <span className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[900px]:left-[calc(50%-335px)] min-[900px]:-translate-x-1/2">
         Jeffrey Lind
       </span>
-      <div className="hidden sm:block">
+      <div className="hidden min-[900px]:block">
         <LiquidGlass
           displacementScale={150}
           mouseContainer={container}
