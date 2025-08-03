@@ -36,7 +36,6 @@ export default function Navbar() {
       </Link>
       <div className="hidden min-[800px]:block">
         <LiquidGlass
-          displacementScale={150}
           mouseContainer={container}
           padding="8px 14px"
           style={{

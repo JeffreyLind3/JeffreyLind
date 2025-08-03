@@ -330,7 +330,7 @@ interface LiquidGlassProps {
 
 export default function LiquidGlass({
   children,
-  displacementScale = 70,
+  displacementScale = 150,
   blurAmount = 0.0625,
   saturation = 140,
   cornerRadius = 999,
