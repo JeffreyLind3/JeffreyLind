@@ -13,9 +13,6 @@ export default function Navbar() {
   return (
     <LiquidGlass
       displacementScale={100}
-      blurAmount={0}
-      saturation={100}
-      cornerRadius={100}
       mouseContainer={containerRef}
       style={{
         position: "fixed",
