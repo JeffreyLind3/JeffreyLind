@@ -30,7 +30,7 @@ export default function Navbar() {
     <>
       <Link
         href="/"
-        className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)] min-[800px]:-translate-x-1/2"
+        className="fixed top-[4.7%] left-4 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)] min-[800px]:-translate-x-1/2"
       >
         Jeffrey Lind
       </Link>
