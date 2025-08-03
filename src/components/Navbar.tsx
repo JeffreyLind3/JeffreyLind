@@ -16,12 +16,12 @@ export default function Navbar() {
       mouseContainer={containerRef}
       style={{
         position: "fixed",
-        top: "6%",
+        top: "5%",
         left: "50%",
         transform: "translate(-50%, -50%)",
       }}
     >
-      <div className="p-6 w-[400px]" />
+      <div className="p-1 w-[400px]" />
     </LiquidGlass>
   );
 }
