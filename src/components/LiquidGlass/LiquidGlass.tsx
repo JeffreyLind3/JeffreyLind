@@ -362,13 +362,21 @@ export default function LiquidGlass({
         return;
       }
 
-      const rect = container.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const referenceRect =
+        glassRef.current?.getBoundingClientRect() ||
+        container.getBoundingClientRect();
+      const centerX = referenceRect.left + referenceRect.width / 2;
+      const centerY = referenceRect.top + referenceRect.height / 2;
 
       setInternalMouseOffset({
-        x: ((e.clientX - centerX) / rect.width) * 100,
-        y: ((e.clientY - centerY) / rect.height) * 100,
+        x: Math.max(
+          -50,
+          Math.min(50, ((e.clientX - centerX) / referenceRect.width) * 100)
+        ),
+        y: Math.max(
+          -50,
+          Math.min(50, ((e.clientY - centerY) / referenceRect.height) * 100)
+        ),
       });
     },
     [mouseContainer]
@@ -395,9 +403,9 @@ export default function LiquidGlass({
 
   // Calculate directional scaling based on mouse position
   const calculateTransform = useCallback(() => {
-    const scale = isActive && onClick ? "scale(0.96)" : "scale(1)";
+    const scale = isActive ? "scale(0.96)" : "scale(1)";
     return `translate(-50%, -50%) ${scale}`;
-  }, [isActive, onClick]);
+  }, [isActive]);
 
   // Update glass size whenever component mounts or window resizes
   useEffect(() => {
@@ -546,57 +554,64 @@ export default function LiquidGlass({
       />
 
       {/* Hover effects */}
-      {Boolean(onClick) && (
-        <>
-          <div
-            style={{
-              ...positionStyles,
-              height: glassSize.height,
-              width: glassSize.width + 1,
-              borderRadius: `${cornerRadius}px`,
-              transform: baseStyle.transform,
-              pointerEvents: "none",
-              transition: "all 0.2s ease-out",
-              opacity: isHovered || isActive ? 0.5 : 0,
-              backgroundImage:
-                "radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%)",
-              mixBlendMode: "overlay",
-            }}
-          />
-          <div
-            style={{
-              ...positionStyles,
-              height: glassSize.height,
-              width: glassSize.width + 1,
-              borderRadius: `${cornerRadius}px`,
-              transform: baseStyle.transform,
-              pointerEvents: "none",
-              transition: "all 0.2s ease-out",
-              opacity: isActive ? 0.5 : 0,
-              backgroundImage:
-                "radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%)",
-              mixBlendMode: "overlay",
-            }}
-          />
-          <div
-            style={{
-              ...baseStyle,
-              height: glassSize.height,
-              width: glassSize.width + 1,
-              borderRadius: `${cornerRadius}px`,
-              position: baseStyle.position,
-              top: baseStyle.top,
-              left: baseStyle.left,
-              pointerEvents: "none",
-              transition: "all 0.2s ease-out",
-              opacity: isHovered ? 0.4 : isActive ? 0.8 : 0,
-              backgroundImage:
-                "radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)",
-              mixBlendMode: "overlay",
-            }}
-          />
-        </>
-      )}
+      <>
+        <div
+          style={{
+            ...positionStyles,
+            height: glassSize.height,
+            width: glassSize.width + 1,
+            borderRadius: `${cornerRadius}px`,
+            transform: baseStyle.transform,
+            pointerEvents: "none",
+            transition: "all 0.2s ease-out",
+            opacity: isHovered || isActive ? 0.5 : 0,
+            backgroundImage: `radial-gradient(circle at ${
+              50 + mouseOffset.x
+            }% ${
+              50 + mouseOffset.y
+            }%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%)`,
+            mixBlendMode: "overlay",
+          }}
+        />
+        <div
+          style={{
+            ...positionStyles,
+            height: glassSize.height,
+            width: glassSize.width + 1,
+            borderRadius: `${cornerRadius}px`,
+            transform: baseStyle.transform,
+            pointerEvents: "none",
+            transition: "all 0.2s ease-out",
+            opacity: isActive ? 0.5 : 0,
+            backgroundImage: `radial-gradient(circle at ${
+              50 + mouseOffset.x
+            }% ${
+              50 + mouseOffset.y
+            }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%)`,
+            mixBlendMode: "overlay",
+          }}
+        />
+        <div
+          style={{
+            ...baseStyle,
+            height: glassSize.height,
+            width: glassSize.width + 1,
+            borderRadius: `${cornerRadius}px`,
+            position: baseStyle.position,
+            top: baseStyle.top,
+            left: baseStyle.left,
+            pointerEvents: "none",
+            transition: "all 0.2s ease-out",
+            opacity: isHovered ? 0.4 : isActive ? 0.8 : 0,
+            backgroundImage: `radial-gradient(circle at ${
+              50 + mouseOffset.x
+            }% ${
+              50 + mouseOffset.y
+            }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)`,
+            mixBlendMode: "overlay",
+          }}
+        />
+      </>
     </>
   );
 }
