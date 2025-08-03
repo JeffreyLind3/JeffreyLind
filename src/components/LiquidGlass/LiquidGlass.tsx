@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ShaderDisplacementGenerator,
   fragmentShaders,
@@ -315,7 +317,7 @@ interface LiquidGlassProps {
   saturation?: number;
   cornerRadius?: number;
   mouseOffset?: { x: number; y: number };
-  mouseContainer?: React.RefObject<HTMLElement | null> | null;
+  mouseContainer?: HTMLElement | null;
   className?: string;
   padding?: string;
   style?: React.CSSProperties;
@@ -352,7 +354,7 @@ export default function LiquidGlass({
   // Internal mouse tracking
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      const container = mouseContainer?.current || glassRef.current;
+      const container = mouseContainer || glassRef.current;
       if (!container) {
         return;
       }
@@ -376,7 +378,7 @@ export default function LiquidGlass({
       return;
     }
 
-    const container = mouseContainer?.current || glassRef.current;
+    const container = mouseContainer || glassRef.current;
     if (!container) {
       return;
     }

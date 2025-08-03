@@ -2,13 +2,13 @@
 
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const containerRef = useRef<HTMLElement | null>(null);
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    containerRef.current = document.body;
+    setContainer(document.body);
   }, []);
 
   return (
@@ -29,7 +29,7 @@ export default function Navbar() {
       </span>
       <LiquidGlass
         displacementScale={150}
-        mouseContainer={containerRef}
+        mouseContainer={container}
         padding="16px 30px"
         style={{
           position: "fixed",
