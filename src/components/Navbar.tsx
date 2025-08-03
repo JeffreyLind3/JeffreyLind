@@ -28,9 +28,12 @@ export default function Navbar() {
 
   return (
     <>
-      <span className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[900px]:left-[calc(50%-335px)] min-[900px]:-translate-x-1/2">
+      <Link
+        href="/"
+        className="fixed top-[4.7%] left-8 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[900px]:left-[calc(50%-281px)] min-[900px]:-translate-x-1/2"
+      >
         Jeffrey Lind
-      </span>
+      </Link>
       <div className="hidden min-[900px]:block">
         <LiquidGlass
           displacementScale={150}
@@ -43,8 +46,7 @@ export default function Navbar() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <div className="flex justify-between w-[432px] text-base font-bold">
-            <NavLink href="/">Home</NavLink>
+          <div className="flex justify-between w-[324px] text-base font-bold">
             <NavLink href="/career">Career</NavLink>
             <NavLink href="/education">Education</NavLink>
             <NavLink href="/projects">Projects</NavLink>
