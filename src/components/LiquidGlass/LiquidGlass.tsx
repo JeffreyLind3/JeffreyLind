@@ -192,6 +192,7 @@ const GlassContainer = forwardRef<
     onMouseEnter?: () => void;
     onMouseDown?: () => void;
     onMouseUp?: () => void;
+    onMouseMove?: (e: React.MouseEvent<HTMLDivElement>) => void;
     active?: boolean;
     overLight?: boolean;
     cornerRadius?: number;
@@ -213,6 +214,7 @@ const GlassContainer = forwardRef<
       onMouseLeave,
       onMouseDown,
       onMouseUp,
+      onMouseMove,
       active = false,
       overLight = false,
       cornerRadius = 999,
@@ -281,6 +283,7 @@ const GlassContainer = forwardRef<
           onMouseLeave={onMouseLeave}
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
+          onMouseMove={onMouseMove}
         >
           {/* Backdrop layer that gets wiggly */}
           <span
@@ -360,6 +363,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
       y: 0,
     });
 
+    const [localMouseOffset, setLocalMouseOffset] = useState({ x: 0, y: 0 });
     // Use external mouse position if provided, otherwise use internal
     const mouseOffset = externalMouseOffset || internalMouseOffset;
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -444,7 +448,21 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
       top: baseStyle.top || "50%",
       left: baseStyle.left || "50%",
     };
-
+    const handleLocalMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      setLocalMouseOffset({
+        x: Math.max(
+          -50,
+          Math.min(50, ((e.clientX - centerX) / rect.width) * 100)
+        ),
+        y: Math.max(
+          -50,
+          Math.min(50, ((e.clientY - centerY) / rect.height) * 100)
+        ),
+      });
+    };
     return (
       <>
         {/* Over light effect */}
@@ -500,6 +518,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
           onMouseLeave={() => setIsHovered(false)}
           onMouseDown={() => setIsActive(true)}
           onMouseUp={() => setIsActive(false)}
+          onMouseMove={handleLocalMouseMove}
           active={isActive}
           overLight={overLight}
           onClick={onClick}
@@ -586,9 +605,9 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               transition: "all 0.2s ease-out",
               opacity: isHovered || isActive ? 0.35 : 0,
               backgroundImage: `radial-gradient(circle at ${
-                50 + mouseOffset.x
+                50 + localMouseOffset.x
               }% ${
-                50 + mouseOffset.y
+                50 + localMouseOffset.y
               }%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%)`,
               mixBlendMode: "overlay",
             }}
@@ -604,9 +623,9 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               transition: "all 0.2s ease-out",
               opacity: isActive ? 0.35 : 0,
               backgroundImage: `radial-gradient(circle at ${
-                50 + mouseOffset.x
+                50 + localMouseOffset.x
               }% ${
-                50 + mouseOffset.y
+                50 + localMouseOffset.y
               }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%)`,
               mixBlendMode: "overlay",
             }}
@@ -624,9 +643,9 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               transition: "all 0.2s ease-out",
               opacity: isHovered ? 0.3 : isActive ? 0.6 : 0,
               backgroundImage: `radial-gradient(circle at ${
-                50 + mouseOffset.x
+                50 + localMouseOffset.x
               }% ${
-                50 + mouseOffset.y
+                50 + localMouseOffset.y
               }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)`,
               mixBlendMode: "overlay",
             }}

@@ -20,11 +20,23 @@ const NavLink = ({
 );
 
 export default function Navbar() {
-  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const [globalMouseOffset, setGlobalMouseOffset] = useState({ x: 0, y: 0 });
   const navRef = useRef<HTMLDivElement>(null);
   const [navHeight, setNavHeight] = useState(0);
   useEffect(() => {
-    setContainer(document.body);
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const offsetX = ((e.clientX - centerX) / (window.innerWidth / 2)) * 50;
+      const offsetY = ((e.clientY - centerY) / (window.innerHeight / 2)) * 50;
+      setGlobalMouseOffset({
+        x: Math.max(-50, Math.min(50, offsetX)),
+        y: Math.max(-50, Math.min(50, offsetY)),
+      });
+    };
+    document.addEventListener("mousemove", handleGlobalMouseMove);
+    return () =>
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
   }, []);
   useEffect(() => {
     if (navRef.current) {
@@ -42,7 +54,7 @@ export default function Navbar() {
       <div className="hidden min-[800px]:block">
         <LiquidGlass
           ref={navRef}
-          mouseContainer={container}
+          mouseOffset={globalMouseOffset}
           padding="8px 14px"
           style={{
             position: "fixed",
@@ -62,7 +74,7 @@ export default function Navbar() {
         <div className="hidden min-[800px]:block">
           <LiquidGlass
             displacementScale={150}
-            mouseContainer={container}
+            mouseOffset={globalMouseOffset}
             padding="0px"
             style={{
               position: "fixed",
