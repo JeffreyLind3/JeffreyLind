@@ -30,7 +30,10 @@ const PillContent = () => (
 export default function Navbar() {
   const [globalMouseOffset, setGlobalMouseOffset] = useState({ x: 0, y: 0 });
   const navRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
   const [navHeight, setNavHeight] = useState(0);
+  const [isLarge, setIsLarge] = useState(false);
+  const [logoActive, setLogoActive] = useState(false);
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       const centerX = window.innerWidth / 2;
@@ -51,6 +54,14 @@ export default function Navbar() {
       setNavHeight(navRef.current.getBoundingClientRect().height);
     }
   }, []);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLarge(window.innerWidth >= 800);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <>
       <div className="absolute -top-[9999px] pointer-events-none">
@@ -63,8 +74,18 @@ export default function Navbar() {
         </LiquidGlass>
       </div>
       <Link
+        ref={logoRef}
         href="/"
-        className="fixed top-[4.7%] left-4 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)] min-[800px]:-translate-x-1/2"
+        className="fixed top-[4.7%] left-4 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)]"
+        style={{
+          transform: isLarge
+            ? `translate(-50%, -50%) scale(${logoActive ? 0.96 : 1})`
+            : `translateY(-50%) scale(${logoActive ? 0.96 : 1})`,
+          transition: "transform 0.2s ease-out",
+        }}
+        onMouseLeave={() => setLogoActive(false)}
+        onMouseDown={() => setLogoActive(true)}
+        onMouseUp={() => setLogoActive(false)}
       >
         Jeffrey Lind
       </Link>
