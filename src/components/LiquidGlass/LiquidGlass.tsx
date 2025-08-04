@@ -10,6 +10,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -231,7 +232,7 @@ const GlassContainer = forwardRef<
     const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
     // Generate shader displacement map
-    useEffect(() => {
+    useLayoutEffect(() => {
       const url = generateShaderDisplacementMap(
         glassSize.width,
         glassSize.height
@@ -333,6 +334,7 @@ interface LiquidGlassProps {
   overLight?: boolean;
   onClick?: () => void;
   fullSize?: boolean;
+  fixedSize?: { width: number; height: number };
 }
 
 const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
@@ -351,13 +353,16 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
       style = {},
       onClick,
       fullSize = false,
+      fixedSize,
     },
     ref
   ) => {
     const glassRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [isActive, setIsActive] = useState(false);
-    const [glassSize, setGlassSize] = useState({ width: 270, height: 69 });
+    const [glassSize, setGlassSize] = useState(
+      fixedSize || { width: 270, height: 69 }
+    );
     const [internalMouseOffset, setInternalMouseOffset] = useState({
       x: 0,
       y: 0,
@@ -420,8 +425,9 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
       return `translate(-50%, -50%) ${scale}`;
     }, [isActive]);
 
-    // Update glass size on resize
-    useEffect(() => {
+    // Update glass size on resize if not fixed
+    useLayoutEffect(() => {
+      if (fixedSize) return;
       const current = glassRef.current;
       if (!current) return;
       const updateSize = () => {
@@ -433,8 +439,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
       const resizeObserver = new ResizeObserver(updateSize);
       resizeObserver.observe(current);
       return () => resizeObserver.disconnect();
-    }, []);
-
+    }, [fixedSize]);
     const transformStyle = calculateTransform();
 
     const baseStyle = {

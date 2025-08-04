@@ -29,11 +29,10 @@ const PillContent = () => (
 
 export default function Navbar() {
   const [globalMouseOffset, setGlobalMouseOffset] = useState({ x: 0, y: 0 });
-  const navRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLAnchorElement>(null);
-  const [navHeight, setNavHeight] = useState(0);
   const [isLarge, setIsLarge] = useState(false);
   const [logoActive, setLogoActive] = useState(false);
+  const navHeight = 52;
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       const centerX = window.innerWidth / 2;
@@ -50,11 +49,6 @@ export default function Navbar() {
       document.removeEventListener("mousemove", handleGlobalMouseMove);
   }, []);
   useEffect(() => {
-    if (navRef.current) {
-      setNavHeight(navRef.current.getBoundingClientRect().height);
-    }
-  }, []);
-  useEffect(() => {
     const handleResize = () => {
       setIsLarge(window.innerWidth >= 800);
     };
@@ -64,15 +58,6 @@ export default function Navbar() {
   }, []);
   return (
     <>
-      <div className="absolute -top-[9999px] pointer-events-none">
-        <LiquidGlass
-          ref={navRef}
-          mouseOffset={globalMouseOffset}
-          padding="8px 14px"
-        >
-          <PillContent />
-        </LiquidGlass>
-      </div>
       <Link
         ref={logoRef}
         href="/"
@@ -99,48 +84,47 @@ export default function Navbar() {
             left: "50%",
             transform: "translate(-50%, -50%)",
           }}
+          fixedSize={{ width: 352, height: navHeight }}
         >
           <PillContent />
         </LiquidGlass>
       </div>
-      {navHeight > 0 && (
-        <div className="hidden min-[800px]:block">
-          <LiquidGlass
-            displacementScale={150}
-            mouseOffset={globalMouseOffset}
-            padding="0px"
-            style={{
-              position: "fixed",
-              top: "4.7%",
-              left: "calc(50% + 240px)",
-              transform: "translate(-50%, -50%)",
-              width: `${navHeight}px`,
-              height: `${navHeight}px`,
-            }}
-            cornerRadius={navHeight / 2}
-            fullSize={true}
-          />
-        </div>
-      )}
-      {navHeight > 0 && (
-        <div className="block min-[800px]:hidden">
-          <LiquidGlass
-            displacementScale={150}
-            mouseOffset={globalMouseOffset}
-            padding="0px"
-            style={{
-              position: "fixed",
-              top: "4.7%",
-              left: `calc(100% - 1rem - ${navHeight / 2}px)`,
-              transform: "translate(-50%, -50%)",
-              width: `${navHeight}px`,
-              height: `${navHeight}px`,
-            }}
-            cornerRadius={navHeight / 2}
-            fullSize={true}
-          />
-        </div>
-      )}
+      <div className="hidden min-[800px]:block">
+        <LiquidGlass
+          displacementScale={150}
+          mouseOffset={globalMouseOffset}
+          padding="0px"
+          style={{
+            position: "fixed",
+            top: "4.7%",
+            left: "calc(50% + 240px)",
+            transform: "translate(-50%, -50%)",
+            width: `${navHeight}px`,
+            height: `${navHeight}px`,
+          }}
+          cornerRadius={navHeight / 2}
+          fullSize={true}
+          fixedSize={{ width: navHeight, height: navHeight }}
+        />
+      </div>
+      <div className="block min-[800px]:hidden">
+        <LiquidGlass
+          displacementScale={150}
+          mouseOffset={globalMouseOffset}
+          padding="0px"
+          style={{
+            position: "fixed",
+            top: "4.7%",
+            left: `calc(100% - 1rem - ${navHeight / 2}px)`,
+            transform: "translate(-50%, -50%)",
+            width: `${navHeight}px`,
+            height: `${navHeight}px`,
+          }}
+          cornerRadius={navHeight / 2}
+          fullSize={true}
+          fixedSize={{ width: navHeight, height: navHeight }}
+        />
+      </div>
     </>
   );
 }
