@@ -2,7 +2,7 @@
 
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const NavLink = ({
   href,
@@ -21,11 +21,16 @@ const NavLink = ({
 
 export default function Navbar() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
-
+  const navRef = useRef<HTMLDivElement>(null);
+  const [navHeight, setNavHeight] = useState(0);
   useEffect(() => {
     setContainer(document.body);
   }, []);
-
+  useEffect(() => {
+    if (navRef.current) {
+      setNavHeight(navRef.current.getBoundingClientRect().height);
+    }
+  }, []);
   return (
     <>
       <Link
@@ -36,6 +41,7 @@ export default function Navbar() {
       </Link>
       <div className="hidden min-[800px]:block">
         <LiquidGlass
+          ref={navRef}
           mouseContainer={container}
           padding="8px 14px"
           style={{
@@ -52,6 +58,25 @@ export default function Navbar() {
           </div>
         </LiquidGlass>
       </div>
+      {navHeight > 0 && (
+        <div className="hidden min-[800px]:block">
+          <LiquidGlass
+            displacementScale={150}
+            mouseContainer={container}
+            padding="0px"
+            style={{
+              position: "fixed",
+              top: "4.7%",
+              left: "calc(50% + 281px)",
+              transform: "translate(-50%, -50%)",
+              width: `${navHeight}px`,
+              height: `${navHeight}px`,
+            }}
+            cornerRadius={navHeight / 2}
+            fullSize={true}
+          />
+        </div>
+      )}
     </>
   );
 }

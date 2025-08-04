@@ -198,6 +198,7 @@ const GlassContainer = forwardRef<
     padding?: string;
     glassSize?: { width: number; height: number };
     onClick?: () => void;
+    fullSize?: boolean;
   }>
 >(
   (
@@ -218,6 +219,7 @@ const GlassContainer = forwardRef<
       padding = "24px 32px",
       glassSize = { width: 270, height: 69 },
       onClick,
+      fullSize = false,
     },
     ref
   ) => {
@@ -273,6 +275,7 @@ const GlassContainer = forwardRef<
             boxShadow: overLight
               ? "0px 16px 70px rgba(0, 0, 0, 0.75)"
               : "0px 12px 40px rgba(0, 0, 0, 0.25)",
+            ...(fullSize ? { width: "100%", height: "100%" } : {}),
           }}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -314,7 +317,7 @@ const GlassContainer = forwardRef<
 GlassContainer.displayName = "GlassContainer";
 
 interface LiquidGlassProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   displacementScale?: number;
   blurAmount?: number;
   saturation?: number;
@@ -326,292 +329,313 @@ interface LiquidGlassProps {
   style?: React.CSSProperties;
   overLight?: boolean;
   onClick?: () => void;
+  fullSize?: boolean;
 }
 
-export default function LiquidGlass({
-  children,
-  displacementScale = 150,
-  blurAmount = 0,
-  saturation = 140,
-  cornerRadius = 999,
-  mouseOffset: externalMouseOffset,
-  mouseContainer = null,
-  className = "",
-  padding = "24px 32px",
-  overLight = false,
-  style = {},
-  onClick,
-}: LiquidGlassProps) {
-  const glassRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  const [glassSize, setGlassSize] = useState({ width: 270, height: 69 });
-  const [internalMouseOffset, setInternalMouseOffset] = useState({
-    x: 0,
-    y: 0,
-  });
+const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
+  (
+    {
+      children,
+      displacementScale = 150,
+      blurAmount = 0,
+      saturation = 140,
+      cornerRadius = 999,
+      mouseOffset: externalMouseOffset,
+      mouseContainer = null,
+      className = "",
+      padding = "24px 32px",
+      overLight = false,
+      style = {},
+      onClick,
+      fullSize = false,
+    },
+    ref
+  ) => {
+    const glassRef = useRef<HTMLDivElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isActive, setIsActive] = useState(false);
+    const [glassSize, setGlassSize] = useState({ width: 270, height: 69 });
+    const [internalMouseOffset, setInternalMouseOffset] = useState({
+      x: 0,
+      y: 0,
+    });
 
-  // Use external mouse position if provided, otherwise use internal
-  const mouseOffset = externalMouseOffset || internalMouseOffset;
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  // Internal mouse tracking
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
+    // Use external mouse position if provided, otherwise use internal
+    const mouseOffset = externalMouseOffset || internalMouseOffset;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // Internal mouse tracking
+    const handleMouseMove = useCallback(
+      (e: MouseEvent) => {
+        const container = mouseContainer || glassRef.current;
+        if (!container) {
+          return;
+        }
+
+        const referenceRect =
+          glassRef.current?.getBoundingClientRect() ||
+          container.getBoundingClientRect();
+        const centerX = referenceRect.left + referenceRect.width / 2;
+        const centerY = referenceRect.top + referenceRect.height / 2;
+
+        setInternalMouseOffset({
+          x: Math.max(
+            -50,
+            Math.min(50, ((e.clientX - centerX) / referenceRect.width) * 100)
+          ),
+          y: Math.max(
+            -50,
+            Math.min(50, ((e.clientY - centerY) / referenceRect.height) * 100)
+          ),
+        });
+      },
+      [mouseContainer]
+    );
+
+    // Set up mouse tracking if no external mouse position is provided
+    useEffect(() => {
+      if (externalMouseOffset || isSafari) {
+        // External mouse tracking is provided or is Safari, don't set up internal tracking
+        return;
+      }
+
       const container = mouseContainer || glassRef.current;
       if (!container) {
         return;
       }
 
-      const referenceRect =
-        glassRef.current?.getBoundingClientRect() ||
-        container.getBoundingClientRect();
-      const centerX = referenceRect.left + referenceRect.width / 2;
-      const centerY = referenceRect.top + referenceRect.height / 2;
+      container.addEventListener("mousemove", handleMouseMove);
 
-      setInternalMouseOffset({
-        x: Math.max(
-          -50,
-          Math.min(50, ((e.clientX - centerX) / referenceRect.width) * 100)
-        ),
-        y: Math.max(
-          -50,
-          Math.min(50, ((e.clientY - centerY) / referenceRect.height) * 100)
-        ),
-      });
-    },
-    [mouseContainer]
-  );
+      return () => {
+        container.removeEventListener("mousemove", handleMouseMove);
+      };
+    }, [handleMouseMove, mouseContainer, externalMouseOffset, isSafari]);
 
-  // Set up mouse tracking if no external mouse position is provided
-  useEffect(() => {
-    if (externalMouseOffset || isSafari) {
-      // External mouse tracking is provided or is Safari, don't set up internal tracking
-      return;
-    }
+    // Calculate directional scaling based on mouse position
+    const calculateTransform = useCallback(() => {
+      const scale = isActive ? "scale(0.96)" : "scale(1)";
+      return `translate(-50%, -50%) ${scale}`;
+    }, [isActive]);
 
-    const container = mouseContainer || glassRef.current;
-    if (!container) {
-      return;
-    }
-
-    container.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [handleMouseMove, mouseContainer, externalMouseOffset, isSafari]);
-
-  // Calculate directional scaling based on mouse position
-  const calculateTransform = useCallback(() => {
-    const scale = isActive ? "scale(0.96)" : "scale(1)";
-    return `translate(-50%, -50%) ${scale}`;
-  }, [isActive]);
-
-  // Update glass size whenever component mounts or window resizes
-  useEffect(() => {
-    const updateGlassSize = () => {
-      if (glassRef.current) {
-        const rect = glassRef.current.getBoundingClientRect();
+    // Update glass size on resize
+    useEffect(() => {
+      const current = glassRef.current;
+      if (!current) return;
+      const updateSize = () => {
+        const rect = current.getBoundingClientRect();
         setGlassSize({ width: rect.width, height: rect.height });
-      }
+      };
+
+      updateSize();
+      const resizeObserver = new ResizeObserver(updateSize);
+      resizeObserver.observe(current);
+      return () => resizeObserver.disconnect();
+    }, []);
+
+    const transformStyle = calculateTransform();
+
+    const baseStyle = {
+      ...style,
+      transform: transformStyle,
+      transition: "all ease-out 0.2s",
     };
 
-    updateGlassSize();
-    window.addEventListener("resize", updateGlassSize);
-    return () => window.removeEventListener("resize", updateGlassSize);
-  }, []);
+    const positionStyles = {
+      position: baseStyle.position || "relative",
+      top: baseStyle.top || "50%",
+      left: baseStyle.left || "50%",
+    };
 
-  const transformStyle = calculateTransform();
-
-  const baseStyle = {
-    ...style,
-    transform: transformStyle,
-    transition: "all ease-out 0.2s",
-  };
-
-  const positionStyles = {
-    position: baseStyle.position || "relative",
-    top: baseStyle.top || "50%",
-    left: baseStyle.left || "50%",
-  };
-
-  return (
-    <>
-      {/* Over light effect */}
-      <div
-        className={`bg-black transition-all duration-150 ease-in-out pointer-events-none ${
-          overLight ? "opacity-20" : "opacity-0"
-        }`}
-        style={{
-          ...positionStyles,
-          height: glassSize.height,
-          width: glassSize.width,
-          borderRadius: `${cornerRadius}px`,
-          transform: baseStyle.transform,
-          transition: baseStyle.transition,
-        }}
-      />
-      <div
-        className={`bg-black transition-all duration-150 ease-in-out pointer-events-none mix-blend-overlay ${
-          overLight ? "opacity-100" : "opacity-0"
-        }`}
-        style={{
-          ...positionStyles,
-          height: glassSize.height,
-          width: glassSize.width,
-          borderRadius: `${cornerRadius}px`,
-          transform: baseStyle.transform,
-          transition: baseStyle.transition,
-        }}
-      />
-
-      <GlassContainer
-        ref={glassRef}
-        className={className}
-        style={baseStyle}
-        cornerRadius={cornerRadius}
-        displacementScale={
-          overLight ? displacementScale * 0.5 : displacementScale
-        }
-        blurAmount={blurAmount}
-        saturation={saturation}
-        glassSize={glassSize}
-        padding={padding}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseDown={() => setIsActive(true)}
-        onMouseUp={() => setIsActive(false)}
-        active={isActive}
-        overLight={overLight}
-        onClick={onClick}
-      >
-        {children}
-      </GlassContainer>
-
-      {/* Border layer 1 - extracted from glass container */}
-      <span
-        style={{
-          ...positionStyles,
-          height: glassSize.height,
-          width: glassSize.width,
-          borderRadius: `${cornerRadius}px`,
-          transform: baseStyle.transform,
-          transition: baseStyle.transition,
-          pointerEvents: "none",
-          mixBlendMode: "screen",
-          opacity: 0.2,
-          padding: "1.5px",
-          WebkitMask:
-            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-          boxShadow:
-            "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
-          background: `linear-gradient(
-                       ${135 + mouseOffset.x * 1.2}deg,
-                       rgba(255, 255, 255, 0.0) 0%,
-                       rgba(255, 255, 255, ${
-                         0.12 + Math.abs(mouseOffset.x) * 0.008
-                       }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-                       rgba(255, 255, 255, ${
-                         0.4 + Math.abs(mouseOffset.x) * 0.012
-                       }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-                       rgba(255, 255, 255, 0.0) 100%
-                      )`,
-        }}
-      />
-
-      {/* Border layer 2 - duplicate with mix-blend-overlay */}
-      <span
-        style={{
-          ...positionStyles,
-          height: glassSize.height,
-          width: glassSize.width,
-          borderRadius: `${cornerRadius}px`,
-          transform: baseStyle.transform,
-          transition: baseStyle.transition,
-          pointerEvents: "none",
-          mixBlendMode: "overlay",
-          padding: "1.5px",
-          WebkitMask:
-            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-          boxShadow:
-            "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
-          background: `linear-gradient(
-                       ${135 + mouseOffset.x * 1.2}deg,
-                       rgba(255, 255, 255, 0.0) 0%,
-                       rgba(255, 255, 255, ${
-                         0.32 + Math.abs(mouseOffset.x) * 0.008
-                       }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-                       rgba(255, 255, 255, ${
-                         0.6 + Math.abs(mouseOffset.x) * 0.012
-                       }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-                       rgba(255, 255, 255, 0.0) 100%
-                      )`,
-        }}
-      />
-
-      {/* Hover effects */}
+    return (
       <>
+        {/* Over light effect */}
         <div
+          className={`bg-black transition-all duration-150 ease-in-out pointer-events-none ${
+            overLight ? "opacity-20" : "opacity-0"
+          }`}
           style={{
             ...positionStyles,
             height: glassSize.height,
-            width: glassSize.width + 1,
+            width: glassSize.width,
             borderRadius: `${cornerRadius}px`,
             transform: baseStyle.transform,
-            pointerEvents: "none",
-            transition: "all 0.2s ease-out",
-            opacity: isHovered || isActive ? 0.5 : 0,
-            backgroundImage: `radial-gradient(circle at ${
-              50 + mouseOffset.x
-            }% ${
-              50 + mouseOffset.y
-            }%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%)`,
-            mixBlendMode: "overlay",
+            transition: baseStyle.transition,
           }}
         />
         <div
+          className={`bg-black transition-all duration-150 ease-in-out pointer-events-none mix-blend-overlay ${
+            overLight ? "opacity-100" : "opacity-0"
+          }`}
           style={{
             ...positionStyles,
             height: glassSize.height,
-            width: glassSize.width + 1,
+            width: glassSize.width,
             borderRadius: `${cornerRadius}px`,
             transform: baseStyle.transform,
-            pointerEvents: "none",
-            transition: "all 0.2s ease-out",
-            opacity: isActive ? 0.5 : 0,
-            backgroundImage: `radial-gradient(circle at ${
-              50 + mouseOffset.x
-            }% ${
-              50 + mouseOffset.y
-            }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%)`,
-            mixBlendMode: "overlay",
+            transition: baseStyle.transition,
           }}
         />
-        <div
+
+        <GlassContainer
+          ref={(el) => {
+            glassRef.current = el;
+            if (ref) {
+              if (typeof ref === "function") {
+                ref(el);
+              } else {
+                ref.current = el;
+              }
+            }
+          }}
+          className={className}
+          style={baseStyle}
+          cornerRadius={cornerRadius}
+          displacementScale={
+            overLight ? displacementScale * 0.5 : displacementScale
+          }
+          blurAmount={blurAmount}
+          saturation={saturation}
+          glassSize={glassSize}
+          padding={padding}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onMouseDown={() => setIsActive(true)}
+          onMouseUp={() => setIsActive(false)}
+          active={isActive}
+          overLight={overLight}
+          onClick={onClick}
+          fullSize={fullSize}
+        >
+          {children}
+        </GlassContainer>
+
+        {/* Border layer 1 - extracted from glass container */}
+        <span
           style={{
-            ...baseStyle,
+            ...positionStyles,
             height: glassSize.height,
-            width: glassSize.width + 1,
+            width: glassSize.width,
             borderRadius: `${cornerRadius}px`,
-            position: baseStyle.position,
-            top: baseStyle.top,
-            left: baseStyle.left,
+            transform: baseStyle.transform,
+            transition: baseStyle.transition,
             pointerEvents: "none",
-            transition: "all 0.2s ease-out",
-            opacity: isHovered ? 0.4 : isActive ? 0.8 : 0,
-            backgroundImage: `radial-gradient(circle at ${
-              50 + mouseOffset.x
-            }% ${
-              50 + mouseOffset.y
-            }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)`,
-            mixBlendMode: "overlay",
+            mixBlendMode: "screen",
+            opacity: 0.2,
+            padding: "1.5px",
+            WebkitMask:
+              "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+            boxShadow:
+              "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
+            background: `linear-gradient(
+                         ${135 + mouseOffset.x * 1.2}deg,
+                         rgba(255, 255, 255, 0.0) 0%,
+                         rgba(255, 255, 255, ${
+                           0.12 + Math.abs(mouseOffset.x) * 0.008
+                         }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
+                         rgba(255, 255, 255, ${
+                           0.4 + Math.abs(mouseOffset.x) * 0.012
+                         }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
+                         rgba(255, 255, 255, 0.0) 100%
+                        )`,
           }}
         />
+
+        {/* Border layer 2 - duplicate with mix-blend-overlay */}
+        <span
+          style={{
+            ...positionStyles,
+            height: glassSize.height,
+            width: glassSize.width,
+            borderRadius: `${cornerRadius}px`,
+            transform: baseStyle.transform,
+            transition: baseStyle.transition,
+            pointerEvents: "none",
+            mixBlendMode: "overlay",
+            padding: "1.5px",
+            WebkitMask:
+              "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+            boxShadow:
+              "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
+            background: `linear-gradient(
+                        ${135 + mouseOffset.x * 1.2}deg,
+                        rgba(255, 255, 255, 0.0) 0%,
+                        rgba(255, 255, 255, ${
+                          0.32 + Math.abs(mouseOffset.x) * 0.008
+                        }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
+                        rgba(255, 255, 255, ${
+                          0.6 + Math.abs(mouseOffset.x) * 0.012
+                        }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
+                        rgba(255, 255, 255, 0.0) 100%
+                      )`,
+          }}
+        />
+
+        {/* Hover effects */}
+        <>
+          <div
+            style={{
+              ...positionStyles,
+              height: glassSize.height,
+              width: glassSize.width + 1,
+              borderRadius: `${cornerRadius}px`,
+              transform: baseStyle.transform,
+              pointerEvents: "none",
+              transition: "all 0.2s ease-out",
+              opacity: isHovered || isActive ? 0.5 : 0,
+              backgroundImage: `radial-gradient(circle at ${
+                50 + mouseOffset.x
+              }% ${
+                50 + mouseOffset.y
+              }%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%)`,
+              mixBlendMode: "overlay",
+            }}
+          />
+          <div
+            style={{
+              ...positionStyles,
+              height: glassSize.height,
+              width: glassSize.width + 1,
+              borderRadius: `${cornerRadius}px`,
+              transform: baseStyle.transform,
+              pointerEvents: "none",
+              transition: "all 0.2s ease-out",
+              opacity: isActive ? 0.5 : 0,
+              backgroundImage: `radial-gradient(circle at ${
+                50 + mouseOffset.x
+              }% ${
+                50 + mouseOffset.y
+              }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%)`,
+              mixBlendMode: "overlay",
+            }}
+          />
+          <div
+            style={{
+              ...baseStyle,
+              height: glassSize.height,
+              width: glassSize.width + 1,
+              borderRadius: `${cornerRadius}px`,
+              position: baseStyle.position,
+              top: baseStyle.top,
+              left: baseStyle.left,
+              pointerEvents: "none",
+              transition: "all 0.2s ease-out",
+              opacity: isHovered ? 0.4 : isActive ? 0.8 : 0,
+              backgroundImage: `radial-gradient(circle at ${
+                50 + mouseOffset.x
+              }% ${
+                50 + mouseOffset.y
+              }%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)`,
+              mixBlendMode: "overlay",
+            }}
+          />
+        </>
       </>
-    </>
-  );
-}
+    );
+  }
+);
+
+LiquidGlass.displayName = "LiquidGlass";
+export default LiquidGlass;

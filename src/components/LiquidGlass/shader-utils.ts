@@ -6,8 +6,7 @@ interface Vec2 {
 interface ShaderOptions {
   width: number;
   height: number;
-  fragment: (uv: Vec2, mouse?: Vec2) => Vec2;
-  mousePosition?: Vec2;
+  fragment: (uv: Vec2, aspect?: number) => Vec2;
 }
 
 function smoothStep(a: number, b: number, t: number): number {
@@ -37,10 +36,33 @@ function roundedRectSDF(
 
 // Shader fragment functions for different effects
 export const fragmentShaders = {
-  liquidGlass: (uv: Vec2): Vec2 => {
+  liquidGlass: (uv: Vec2, aspect: number = 1): Vec2 => {
     const ix = uv.x - 0.5;
     const iy = uv.y - 0.5;
-    const distanceToEdge = roundedRectSDF(ix, iy, 0.3, 0.2, 0.6);
+    let halfWidth = 0.45;
+    let halfHeight = 0.45 / aspect;
+    let radius = 0.2;
+    if (Math.abs(aspect - 1) < 0.01) {
+      // For square/circle
+      halfWidth = 0.45;
+      halfHeight = 0.45;
+      radius = 0.45;
+    } else if (aspect > 1) {
+      halfWidth = 0.45;
+      halfHeight = 0.45 / aspect;
+      radius = Math.min(0.3, halfHeight * 1.5);
+    } else {
+      halfWidth = 0.45 * aspect;
+      halfHeight = 0.45;
+      radius = Math.min(0.3, halfWidth * 1.5);
+    }
+    const distanceToEdge = roundedRectSDF(
+      ix,
+      iy,
+      halfWidth,
+      halfHeight,
+      radius
+    );
     const displacement = smoothStep(0.8, 0, distanceToEdge - 0.15);
     const scaled = smoothStep(0, 1, displacement);
     return { x: ix * scaled + 0.5, y: iy * scaled + 0.5 };
@@ -65,10 +87,10 @@ export class ShaderDisplacementGenerator {
     this.context = context;
   }
 
-  updateShader(mousePosition?: Vec2): string {
+  updateShader(): string {
     const w = this.options.width * this.canvasDPI;
     const h = this.options.height * this.canvasDPI;
-
+    const aspect = w / h;
     let maxScale = 0;
     const rawValues: number[] = [];
 
@@ -77,7 +99,7 @@ export class ShaderDisplacementGenerator {
       for (let x = 0; x < w; x++) {
         const uv: Vec2 = { x: x / w, y: y / h };
 
-        const pos = this.options.fragment(uv, mousePosition);
+        const pos = this.options.fragment(uv, aspect);
         const dx = pos.x * w - x;
         const dy = pos.y * h - y;
 
