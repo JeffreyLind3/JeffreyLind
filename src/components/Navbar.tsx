@@ -19,6 +19,14 @@ const NavLink = ({
   </Link>
 );
 
+const PillContent = () => (
+  <div className="flex justify-between w-[324px] text-base font-bold">
+    <NavLink href="/education">Education</NavLink>
+    <NavLink href="/career">Career</NavLink>
+    <NavLink href="/projects">Projects</NavLink>
+  </div>
+);
+
 export default function Navbar() {
   const [globalMouseOffset, setGlobalMouseOffset] = useState({ x: 0, y: 0 });
   const navRef = useRef<HTMLDivElement>(null);
@@ -45,6 +53,15 @@ export default function Navbar() {
   }, []);
   return (
     <>
+      <div className="absolute -top-[9999px] pointer-events-none">
+        <LiquidGlass
+          ref={navRef}
+          mouseOffset={globalMouseOffset}
+          padding="8px 14px"
+        >
+          <PillContent />
+        </LiquidGlass>
+      </div>
       <Link
         href="/"
         className="fixed top-[4.7%] left-4 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)] min-[800px]:-translate-x-1/2"
@@ -53,7 +70,6 @@ export default function Navbar() {
       </Link>
       <div className="hidden min-[800px]:block">
         <LiquidGlass
-          ref={navRef}
           mouseOffset={globalMouseOffset}
           padding="8px 14px"
           style={{
@@ -63,11 +79,7 @@ export default function Navbar() {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <div className="flex justify-between w-[324px] text-base font-bold">
-            <NavLink href="/education">Education</NavLink>
-            <NavLink href="/career">Career</NavLink>
-            <NavLink href="/projects">Projects</NavLink>
-          </div>
+          <PillContent />
         </LiquidGlass>
       </div>
       {navHeight > 0 && (
@@ -80,6 +92,25 @@ export default function Navbar() {
               position: "fixed",
               top: "4.7%",
               left: "calc(50% + 240px)",
+              transform: "translate(-50%, -50%)",
+              width: `${navHeight}px`,
+              height: `${navHeight}px`,
+            }}
+            cornerRadius={navHeight / 2}
+            fullSize={true}
+          />
+        </div>
+      )}
+      {navHeight > 0 && (
+        <div className="block min-[800px]:hidden">
+          <LiquidGlass
+            displacementScale={150}
+            mouseOffset={globalMouseOffset}
+            padding="0px"
+            style={{
+              position: "fixed",
+              top: "4.7%",
+              left: `calc(100% - 1rem - ${navHeight / 2}px)`,
               transform: "translate(-50%, -50%)",
               width: `${navHeight}px`,
               height: `${navHeight}px`,
