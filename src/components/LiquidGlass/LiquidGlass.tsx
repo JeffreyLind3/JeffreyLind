@@ -179,7 +179,7 @@ const GlassFilter: React.FC<{
   </svg>
 );
 
-/* ---------- container ---------- */
+/* ---------- Container ---------- */
 const GlassContainer = forwardRef<
   HTMLDivElement,
   React.PropsWithChildren<{
