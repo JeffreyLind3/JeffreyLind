@@ -30,7 +30,6 @@ const PillContent = () => (
 export default function Navbar() {
   const [globalMouseOffset, setGlobalMouseOffset] = useState({ x: 0, y: 0 });
   const logoRef = useRef<HTMLAnchorElement>(null);
-  const [isLarge, setIsLarge] = useState(false);
   const [logoActive, setLogoActive] = useState(false);
   const navHeight = 52;
   useEffect(() => {
@@ -48,24 +47,14 @@ export default function Navbar() {
     return () =>
       document.removeEventListener("mousemove", handleGlobalMouseMove);
   }, []);
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLarge(window.innerWidth >= 800);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
   return (
     <>
       <Link
         ref={logoRef}
         href="/"
-        className="fixed top-[4.7%] left-4 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)]"
+        className="fixed top-[4.7%] left-4 -translate-y-1/2 text-2xl font-bold font-sans text-white min-[800px]:left-[calc(50%-281px)] min-[800px]:-translate-x-1/2"
         style={{
-          transform: isLarge
-            ? `translate(-50%, -50%) scale(${logoActive ? 0.96 : 1})`
-            : `translateY(-50%) scale(${logoActive ? 0.96 : 1})`,
+          transform: `scale(${logoActive ? 0.96 : 1})`,
           transition: "transform 0.2s ease-out",
         }}
         onMouseLeave={() => setLogoActive(false)}
