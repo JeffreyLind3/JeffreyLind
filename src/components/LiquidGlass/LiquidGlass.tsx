@@ -241,7 +241,7 @@ const GlassContainer = forwardRef<
     }, [glassSize.width, glassSize.height]);
 
     const backdropStyle = {
-      filter: isFirefox ? null : `url(#${filterId})`,
+      filter: isFirefox || !shaderMapUrl ? null : `url(#${filterId})`,
       backdropFilter: `blur(${
         (overLight ? 12 : 4) + blurAmount * 32
       }px) saturate(${saturation}%)`,
