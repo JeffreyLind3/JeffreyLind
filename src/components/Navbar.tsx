@@ -112,7 +112,13 @@ export default function Navbar() {
           cornerRadius={navHeight / 2}
           fullSize={true}
           fixedSize={{ width: navHeight, height: navHeight }}
-        />
+        >
+          <div className="w-full h-full flex flex-col justify-center items-center gap-1.5">
+            <div className="w-6 h-0.5 bg-white rounded"></div>
+            <div className="w-6 h-0.5 bg-white rounded"></div>
+            <div className="w-6 h-0.5 bg-white rounded"></div>
+          </div>
+        </LiquidGlass>
       </div>
     </>
   );
