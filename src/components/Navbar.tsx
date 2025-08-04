@@ -21,9 +21,9 @@ const NavLink = ({
 
 const PillContent = () => (
   <div className="flex justify-between w-[324px] text-base font-bold">
-    <NavLink href="/education">Education</NavLink>
     <NavLink href="/career">Career</NavLink>
-    <NavLink href="/projects">Projects</NavLink>
+    <NavLink href="/projects">Projects</NavLink>{" "}
+    <NavLink href="/education">Education</NavLink>
   </div>
 );
 
