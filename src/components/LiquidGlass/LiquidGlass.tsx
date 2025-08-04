@@ -584,7 +584,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               transform: baseStyle.transform,
               pointerEvents: "none",
               transition: "all 0.2s ease-out",
-              opacity: isHovered || isActive ? 0.5 : 0,
+              opacity: isHovered || isActive ? 0.35 : 0,
               backgroundImage: `radial-gradient(circle at ${
                 50 + mouseOffset.x
               }% ${
@@ -602,7 +602,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               transform: baseStyle.transform,
               pointerEvents: "none",
               transition: "all 0.2s ease-out",
-              opacity: isActive ? 0.5 : 0,
+              opacity: isActive ? 0.35 : 0,
               backgroundImage: `radial-gradient(circle at ${
                 50 + mouseOffset.x
               }% ${
@@ -622,7 +622,7 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
               left: baseStyle.left,
               pointerEvents: "none",
               transition: "all 0.2s ease-out",
-              opacity: isHovered ? 0.4 : isActive ? 0.8 : 0,
+              opacity: isHovered ? 0.3 : isActive ? 0.6 : 0,
               backgroundImage: `radial-gradient(circle at ${
                 50 + mouseOffset.x
               }% ${
