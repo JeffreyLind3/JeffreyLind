@@ -79,7 +79,7 @@ export default function Navbar() {
             style={{
               position: "fixed",
               top: "4.7%",
-              left: "calc(50% + 281px)",
+              left: "calc(50% + 240px)",
               transform: "translate(-50%, -50%)",
               width: `${navHeight}px`,
               height: `${navHeight}px`,
