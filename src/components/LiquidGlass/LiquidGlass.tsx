@@ -34,7 +34,7 @@ const generateShaderDisplacementMap = (
   return dataUrl;
 };
 
-/* ---------- SVG filter (edge-only displacement) ---------- */
+/* ---------- SVG Filter (Edge-Only Displacement) ---------- */
 const GlassFilter: React.FC<{
   id: string;
   displacementScale: number;
@@ -279,7 +279,7 @@ const GlassContainer = forwardRef<
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
         >
-          {/* backdrop layer that gets wiggly */}
+          {/* Backdrop layer that gets wiggly */}
           <span
             className="glass__warp"
             style={
@@ -291,7 +291,7 @@ const GlassContainer = forwardRef<
             }
           />
 
-          {/* user content stays sharp */}
+          {/* User content stays sharp */}
           <div
             className="transition-all duration-150 ease-in-out text-white"
             style={{
