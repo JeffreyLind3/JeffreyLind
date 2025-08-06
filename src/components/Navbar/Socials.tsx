@@ -1,6 +1,6 @@
 "use client";
 
-import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
+import LiquidGlass from "@/components/LiquidGlass";
 
 type SocialsProps = {
   mouseOffset: { x: number; y: number };

@@ -1,6 +1,6 @@
 "use client";
 
-import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
+import LiquidGlass from "@/components/LiquidGlass";
 
 type HamburgerProps = {
   mouseOffset: { x: number; y: number };
