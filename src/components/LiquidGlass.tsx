@@ -527,17 +527,34 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
             maskComposite: "exclude",
             boxShadow:
               "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
-            background: `linear-gradient(
-                         ${135 + mouseOffset.x * 1.2}deg,
-                         rgba(255, 255, 255, 0.0) 0%,
-                         rgba(255, 255, 255, ${
-                           0.12 + Math.abs(mouseOffset.x) * 0.008
-                         }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-                         rgba(255, 255, 255, ${
-                           0.4 + Math.abs(mouseOffset.x) * 0.012
-                         }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-                         rgba(255, 255, 255, 0.0) 100%
-                        )`,
+            background: (() => {
+              // Create a center-peaked sensitivity curve
+              // When crossing center (x=0), we want the biggest change
+              const normalizedX = mouseOffset.x / 50; // -1 to 1
+
+              // Use a sigmoid-like function that has steep change at center
+              const centerSensitivity = Math.tanh(normalizedX * 3); // Sharp transition at center
+              const angle = 90 + centerSensitivity * 90; // 0° to 180° range
+
+              // Dynamic opacity based on distance from center
+              const baseOpacity = 0.2;
+              const maxOpacity = 0.6;
+              const opacityBoost = Math.abs(normalizedX) * 0.3;
+
+              return `linear-gradient(
+                ${angle}deg,
+                rgba(255, 255, 255, 0.0) 0%,
+                rgba(255, 255, 255, ${baseOpacity + opacityBoost}) ${Math.max(
+                20,
+                40 - mouseOffset.y * 0.4
+              )}%,
+                rgba(255, 255, 255, ${maxOpacity + opacityBoost}) ${Math.min(
+                80,
+                60 - mouseOffset.y * 0.3
+              )}%,
+                rgba(255, 255, 255, 0.0) 100%
+              )`;
+            })(),
           }}
         />
 
@@ -559,17 +576,34 @@ const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(
             maskComposite: "exclude",
             boxShadow:
               "0 0 0 0.5px rgba(255, 255, 255, 0.5) inset, 0 1px 3px rgba(255, 255, 255, 0.25) inset, 0 1px 4px rgba(0, 0, 0, 0.35)",
-            background: `linear-gradient(
-                        ${135 + mouseOffset.x * 1.2}deg,
-                        rgba(255, 255, 255, 0.0) 0%,
-                        rgba(255, 255, 255, ${
-                          0.32 + Math.abs(mouseOffset.x) * 0.008
-                        }) ${Math.max(10, 33 + mouseOffset.y * 0.3)}%,
-                        rgba(255, 255, 255, ${
-                          0.6 + Math.abs(mouseOffset.x) * 0.012
-                        }) ${Math.min(90, 66 + mouseOffset.y * 0.4)}%,
-                        rgba(255, 255, 255, 0.0) 100%
-                      )`,
+            background: (() => {
+              // Create a center-peaked sensitivity curve
+              // When crossing center (x=0), we want the biggest change
+              const normalizedX = mouseOffset.x / 50; // -1 to 1
+
+              // Use a sigmoid-like function that has steep change at center
+              const centerSensitivity = Math.tanh(normalizedX * 3); // Sharp transition at center
+              const angle = 90 + centerSensitivity * 90; // 0° to 180° range
+
+              // Dynamic opacity based on distance from center
+              const baseOpacity = 0.4;
+              const maxOpacity = 0.8;
+              const opacityBoost = Math.abs(normalizedX) * 0.2;
+
+              return `linear-gradient(
+                ${angle}deg,
+                rgba(255, 255, 255, 0.0) 0%,
+                rgba(255, 255, 255, ${baseOpacity + opacityBoost}) ${Math.max(
+                20,
+                40 - mouseOffset.y * 0.4
+              )}%,
+                rgba(255, 255, 255, ${maxOpacity + opacityBoost}) ${Math.min(
+                80,
+                60 - mouseOffset.y * 0.3
+              )}%,
+                rgba(255, 255, 255, 0.0) 100%
+              )`;
+            })(),
           }}
         />
 
