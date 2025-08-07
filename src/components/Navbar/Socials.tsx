@@ -1,6 +1,7 @@
 "use client";
 
 import LiquidGlass from "@/components/LiquidGlass";
+import Image from "next/image";
 
 type SocialsProps = {
   mouseOffset: { x: number; y: number };
@@ -8,6 +9,12 @@ type SocialsProps = {
 
 export default function Socials({ mouseOffset }: SocialsProps) {
   const navHeight = 52;
+  const logos = [
+    "GitHub Logo.png",
+    "LinkedIn Logo.png",
+    "X Logo.webp",
+    "Threads Logo.png",
+  ];
 
   return (
     <div className="hidden min-[800px]:block">
@@ -26,7 +33,19 @@ export default function Socials({ mouseOffset }: SocialsProps) {
         cornerRadius={navHeight / 2}
         fullSize={true}
         fixedSize={{ width: navHeight, height: navHeight }}
-      />
+      >
+        <div className="grid grid-cols-2 gap-1 w-full h-full p-2.5 items-center justify-items-center">
+          {logos.map((logo, index) => (
+            <Image
+              key={index}
+              src={`/Logos/${logo}`}
+              alt={logo.replace(".png", "")}
+              width={14}
+              height={14}
+            />
+          ))}
+        </div>
+      </LiquidGlass>
     </div>
   );
 }
