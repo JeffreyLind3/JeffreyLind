@@ -43,8 +43,8 @@ const Background: React.FC = () => {
         <Image
           key={i}
           ref={i === 0 ? imageRef : null}
-          src="/Hero.png"
-          alt="Hero background pattern"
+          src="/Background.png"
+          alt="Background Image"
           className="w-full select-none pointer-events-none"
           width={1600}
           height={500}
