@@ -1,6 +1,7 @@
 "use client";
 
 import LiquidGlass from "@/components/LiquidGlass";
+import { useState } from "react";
 
 type HamburgerProps = {
   mouseOffset: { x: number; y: number };
@@ -8,6 +9,7 @@ type HamburgerProps = {
 
 export default function Hamburger({ mouseOffset }: HamburgerProps) {
   const navHeight = 52;
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="block min-[800px]:hidden">
@@ -26,11 +28,24 @@ export default function Hamburger({ mouseOffset }: HamburgerProps) {
         cornerRadius={navHeight / 2}
         fullSize={true}
         fixedSize={{ width: navHeight, height: navHeight }}
+        onClick={() => setIsOpen(!isOpen)}
       >
         <div className="w-full h-full flex flex-col justify-center items-center gap-1.5">
-          <div className="w-6 h-0.5 bg-white rounded"></div>
-          <div className="w-6 h-0.5 bg-white rounded"></div>
-          <div className="w-6 h-0.5 bg-white rounded"></div>
+          <div
+            className={`w-6 h-0.5 bg-white rounded transition-all duration-300 ease-in-out ${
+              isOpen ? "rotate-45 translate-y-[8px]" : ""
+            }`}
+          ></div>
+          <div
+            className={`w-6 h-0.5 bg-white rounded transition-all duration-300 ease-in-out ${
+              isOpen ? "opacity-0" : ""
+            }`}
+          ></div>
+          <div
+            className={`w-6 h-0.5 bg-white rounded transition-all duration-300 ease-in-out ${
+              isOpen ? "-rotate-45 translate-y-[-8px]" : ""
+            }`}
+          ></div>
         </div>
       </LiquidGlass>
     </div>
