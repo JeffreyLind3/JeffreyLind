@@ -2,7 +2,7 @@
 
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 type SocialsProps = {
   mouseOffset: { x: number; y: number };
@@ -29,15 +29,25 @@ export default function Socials({ mouseOffset }: SocialsProps) {
   // Hover state with small close delay to bridge the gap
   const [buttonHovered, setButtonHovered] = useState(false);
   const [dropdownHovered, setDropdownHovered] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const openNow = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
+  // Separate timers so they don't cancel each other (use RefObject per React 19)
+  const buttonTimer = useRef<number | null>(null);
+  const dropdownTimer = useRef<number | null>(null);
+
+  const clearTimer = (ref: RefObject<number | null>) => {
+    if (ref.current !== null) {
+      window.clearTimeout(ref.current);
+      ref.current = null;
+    }
   };
-  const scheduleClose = (cb: () => void) => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(cb, 130);
-  };
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      clearTimer(buttonTimer);
+      clearTimer(dropdownTimer);
+    };
+  }, []);
 
   const isOpen = buttonHovered || dropdownHovered;
 
@@ -46,10 +56,16 @@ export default function Socials({ mouseOffset }: SocialsProps) {
       {/* Socials circle */}
       <div
         onMouseEnter={() => {
-          openNow();
+          clearTimer(buttonTimer);
           setButtonHovered(true);
         }}
-        onMouseLeave={() => scheduleClose(() => setButtonHovered(false))}
+        onMouseLeave={() => {
+          clearTimer(buttonTimer);
+          buttonTimer.current = window.setTimeout(
+            () => setButtonHovered(false),
+            130
+          );
+        }}
         aria-label="Open socials menu"
       >
         <LiquidGlass
@@ -85,10 +101,16 @@ export default function Socials({ mouseOffset }: SocialsProps) {
       {isOpen && (
         <div
           onMouseEnter={() => {
-            openNow();
+            clearTimer(dropdownTimer);
             setDropdownHovered(true);
           }}
-          onMouseLeave={() => scheduleClose(() => setDropdownHovered(false))}
+          onMouseLeave={() => {
+            clearTimer(dropdownTimer);
+            dropdownTimer.current = window.setTimeout(
+              () => setDropdownHovered(false),
+              130
+            );
+          }}
         >
           <LiquidGlass
             mouseOffset={mouseOffset}
