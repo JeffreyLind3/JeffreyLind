@@ -30,7 +30,7 @@ export default function Socials({ mouseOffset }: SocialsProps) {
   const [buttonHovered, setButtonHovered] = useState(false);
   const [dropdownHovered, setDropdownHovered] = useState(false);
 
-  // Separate timers so they don't cancel each other (use RefObject per React 19)
+  // Separate timers so they don't cancel each other
   const buttonTimer = useRef<number | null>(null);
   const dropdownTimer = useRef<number | null>(null);
 
