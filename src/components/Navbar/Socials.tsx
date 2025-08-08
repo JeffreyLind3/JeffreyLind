@@ -99,7 +99,18 @@ export default function Socials({ mouseOffset }: SocialsProps) {
       </div>
 
       {isOpen && (
+        // Fixed-position WRAPPER with real geometry acts as the hover hitbox.
+        // IMPORTANT: This wrapper has a transform, so the child must NOT be position: fixed.
         <div
+          style={{
+            position: "fixed",
+            top: `calc(${anchorTop} + ${dropdownOffsetFromAnchor}px)`,
+            left: anchorLeft,
+            transform: "translate(-50%, -50%)",
+            width: `${dropdownWidth}px`,
+            height: `${dropdownHeight}px`,
+            zIndex: 50, // below the circle but above page content
+          }}
           onMouseEnter={() => {
             clearTimer(dropdownTimer);
             setDropdownHovered(true);
@@ -112,16 +123,18 @@ export default function Socials({ mouseOffset }: SocialsProps) {
             );
           }}
         >
+          {/* Center the dropdown LiquidGlass INSIDE the wrapper. */}
           <LiquidGlass
             mouseOffset={mouseOffset}
             padding="0px"
             style={{
-              position: "fixed",
-              top: `calc(${anchorTop} + ${dropdownOffsetFromAnchor}px)`,
-              left: anchorLeft,
-              transform: "translate(-50%, -50%)",
-              width: `${dropdownWidth}px`,
-              height: `${dropdownHeight}px`,
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              // LiquidGlass will add its own translate(-50%, -50%) + scale,
+              // so we intentionally let it keep that transform.
+              width: "100%",
+              height: "100%",
             }}
             cornerRadius={48}
             fullSize
