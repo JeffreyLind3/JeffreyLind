@@ -1,6 +1,6 @@
 "use client";
 
-import LiquidGlass from "@/components/LiquidGlass";
+import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import Link from "next/link";
 import { ReactNode } from "react";
 

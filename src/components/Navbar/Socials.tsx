@@ -1,6 +1,6 @@
 "use client";
 
-import LiquidGlass from "@/components/LiquidGlass";
+import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import Image from "next/image";
 
 type SocialsProps = {

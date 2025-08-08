@@ -1,19 +1,37 @@
 "use client";
 import {
+  ShaderDisplacementGenerator,
+  fragmentShaders,
+} from "@/components/LiquidGlass/shader-utils";
+import {
   type CSSProperties,
   forwardRef,
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
 
-const precomputedMaps: Record<string, string> = {
-  "352x52":
-    "data:image/png;base64,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",
-  "52x52":
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAYAAADFeBvrAAAAAXNSR0IArs4c6QAAAYVJREFUaEPtWtEOgyAMbHGJv+2HqyxlQpBNqiMhQI6nuULoteWK8XhZFksDDRZA8zzTuq607ztZm+BLnyPwMpP/DEbRWj7vaplpN4Ze20YO0DRNDogAiof8l3O4yKmCYIiPAuLkKzMZ8VcAMfN3ZmSRsqlmzyWvZO0JSPQgEB2gq421TTV7DUAuW8dGwwDyoMYG9IsAtJLS7LVKLuzD/DlDcQ2mB65VlrsKFgA9yWD1kvO0jZI7Qt8cKSBDyaFoN0MHcacUrTms2auTAvpQNyUX3Vaf9JnmSg4sh5K75rmScs2xJy6nT0ijeh8CKYAUQAq5Y3fLBpbrg+Xw+vDJU0m3L1mLm4KPgBZFzY6bwi1izk8CbfdB23gFB21/neQShkQfQh/6o3+g5G4GbczGStY6qUn3Xx+CksR/B0/1Mx1IYwKBic7Hf06RDLkxHKAElMZEmr3W64OXxIUMsejk4uwcvzWHNXsNQLG+LwCaRPxnzE8NWqtKklSoKM/GmLy87Cb1NzXtDV7/iBC32tPvAAAAAElFTkSuQmCC",
+// Generate shader-based displacement map using shaderUtils
+const generateShaderDisplacementMap = (
+  width: number,
+  height: number
+): string => {
+  if (width <= 0 || height <= 0) {
+    return "";
+  }
+  const generator = new ShaderDisplacementGenerator({
+    width,
+    height,
+    fragment: fragmentShaders.liquidGlass,
+  });
+
+  const dataUrl = generator.updateShader();
+  generator.destroy();
+
+  return dataUrl;
 };
 
 /* ---------- SVG Filter (Edge-Only Displacement) ---------- */
@@ -34,16 +52,18 @@ const GlassFilter: React.FC<{
         height="170%"
         colorInterpolationFilters="sRGB"
       >
-        <feImage
-          id="feimage"
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          result="DISPLACEMENT_MAP"
-          href={shaderMapUrl}
-          preserveAspectRatio="xMidYMid slice"
-        />
+        {shaderMapUrl && (
+          <feImage
+            id="feimage"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            result="DISPLACEMENT_MAP"
+            href={shaderMapUrl}
+            preserveAspectRatio="xMidYMid slice"
+          />
+        )}
 
         {/* Create edge mask using the displacement map itself */}
         <feColorMatrix
@@ -209,14 +229,19 @@ const GlassContainer = forwardRef<
 
     const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
-    const mapKey = `${glassSize.width}x${glassSize.height}`;
-    const shaderMapUrl = precomputedMaps[mapKey];
-    if (!shaderMapUrl) {
-      throw new Error(`No precomputed map for size ${mapKey}`);
-    }
+    const [shaderMapUrl, setShaderMapUrl] = useState<string>("");
+
+    // Generate shader displacement map
+    useLayoutEffect(() => {
+      const url = generateShaderDisplacementMap(
+        glassSize.width,
+        glassSize.height
+      );
+      setShaderMapUrl(url);
+    }, [glassSize.width, glassSize.height]);
 
     const backdropStyle = {
-      filter: isFirefox ? null : `url(#${filterId})`,
+      filter: isFirefox || !shaderMapUrl ? null : `url(#${filterId})`,
       backdropFilter: `blur(${
         (overLight ? 12 : 4) + blurAmount * 32
       }px) saturate(${saturation}%)`,
