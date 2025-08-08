@@ -31,7 +31,7 @@ export default function Socials({ mouseOffset }: SocialsProps) {
           height: `${navHeight}px`,
         }}
         cornerRadius={navHeight / 2}
-        fullSize={true}
+          fullSize
         fixedSize={{ width: navHeight, height: navHeight }}
       >
         <div className="grid grid-cols-2 gap-1 w-full h-full p-2.5 items-center justify-items-center">
