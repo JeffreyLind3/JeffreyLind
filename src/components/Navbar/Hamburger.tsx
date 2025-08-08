@@ -48,6 +48,30 @@ export default function Hamburger({ mouseOffset }: HamburgerProps) {
           ></div>
         </div>
       </LiquidGlass>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setIsOpen(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <LiquidGlass
+              mouseOffset={mouseOffset}
+              padding="0px"
+              cornerRadius={48}
+              fullSize={true}
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                width: "min(92vw, 800px)",
+                height: "min(70vh, 640px)",
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
